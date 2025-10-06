@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  /* VS Code Dark+ inspired color palette */
+  --color-ide-bg: #1e1e1e;
+  --color-ide-bg-light: #252526;
+  --color-ide-bg-lighter: #2d2d30;
+  --color-ide-border: #3e3e42;
+  --color-ide-text: #d4d4d4;
+  --color-ide-text-muted: #858585;
+
+  /* Syntax highlighting colors */
+  --color-keyword: #569cd6;
+  --color-function: #dcdcaa;
+  --color-string: #ce9178;
+  --color-number: #b5cea8;
+  --color-comment: #6a9955;
+  --color-variable: #9cdcfe;
+  --color-operator: #d4d4d4;
+
+  /* Accent colors */
+  --color-accent: #007acc;
+  --color-accent-hover: #005a9e;
+  --color-success: #89d185;
+  --color-warning: #d7ba7d;
+  --color-error: #f48771;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-ide-bg);
+  color: var(--color-ide-text);
+  min-height: 100vh;
+}
+
+code, pre {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Syntax highlighting for recipe editor */
+.recipe-editor {
+  tab-size: 2;
+  -moz-tab-size: 2;
+}
+
+.recipe-editor::selection {
+  background-color: rgba(0, 122, 204, 0.3);
+}
