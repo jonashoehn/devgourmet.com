@@ -8,14 +8,17 @@ DevGourmet is an interactive recipe application that transforms cooking into an 
 
 ## ✨ Features
 
-- 📝 **DevScript Language**: Write recipes that look like clean, readable code
-- 🔢 **Live Variables**: Change servings, spiciness, or any value—ingredients update instantly
-- ⏱️ **Interactive Timers**: Every `cook()` step becomes a playable countdown
-- 📊 **Dynamic Calculations**: Ingredient amounts scale automatically
-- 🎯 **Step-by-Step Execution**: Run recipes line by line like debugging code
-- 💬 **Console Output**: See every action logged in real-time
-- 🎨 **IDE Theme**: Beautiful dark theme inspired by VS Code
-- ♿ **Accessible**: Works for both developers and non-technical users
+- 📝 **DevScript Language**: Write recipes that look like clean, readable code with full parser support (lexer, parser, interpreter)
+- 🔢 **Bidirectional Variable Sync**: Change servings or spice level via sliders—updates ingredients AND code in real-time
+- ⏱️ **Interactive Timers**: Every `cook()` step becomes a playable countdown with play/pause/stop controls
+- 📊 **Dynamic Calculations**: Ingredient amounts scale automatically based on variables
+- 🎯 **Step-by-Step Execution**: Navigate through recipe steps with visual progress tracking
+- 💬 **Console Output**: See every action logged in real-time with color-coded messages
+- 🎨 **IDE Theme**: Beautiful VS Code Dark+ inspired theme with syntax colors
+- 📱 **Fully Responsive**: Optimized layouts for mobile, tablet, and desktop
+- 🍽️ **Smart Ingredients**: Automatic emoji detection for 40+ common ingredients
+- ✏️ **Live Editing**: Code editor with 500ms debounce and tab key support
+- 🎛️ **Dual Controls**: Adjust variables with both sliders (1-20 range) and number inputs
 
 ---
 
@@ -41,6 +44,14 @@ bun run dev
 
 The app will be available at `http://localhost:5173`
 
+### Demo Recipes
+
+Try out these included recipes:
+- 🥞 **Classic Pancakes** - Simple breakfast with adjustable servings and sweetness
+- 🍝 **Spaghetti Marinara** - Italian pasta with customizable servings and spice level
+- 🍪 **Chocolate Chip Cookies** - Classic cookies with batch size control
+- 🥦 **Creamy Broccoli Fusilli** - Pasta with broccoli, anchovies, and adjustable spice
+
 ---
 
 ## 📖 DevScript Example
@@ -64,9 +75,11 @@ serve("warm with syrup");
 ```
 
 **What happens:**
-- Change `servings` from 4 to 8 → all ingredients double automatically
-- Click ▶️ next to `cook(3, "minutes")` → timer starts with countdown
-- Each line logs to the console as it "executes"
+- Change `servings` slider from 4 to 8 → all ingredients double AND code updates automatically
+- Adjust `sweetness` → sugar amount changes in real-time in both ingredients list and calculations
+- Click ▶️ next to `cook(3, "minutes")` → timer starts with visual countdown and progress bar
+- Each step logs to the console with color-coded messages (info, success, error, variable changes)
+- Edit code directly → ingredients and steps re-parse instantly with 500ms debounce
 
 ---
 
@@ -76,34 +89,39 @@ serve("warm with syrup");
 - [x] Project setup with Vite + React + TypeScript
 - [x] Tailwind CSS v4 configuration
 - [x] Basic project structure
-- [ ] DevScript parser (lexer, parser, interpreter)
-- [ ] Core type definitions
+- [x] DevScript parser (lexer, parser, interpreter)
+- [x] Core type definitions
 
-### Phase 2: Core Features
-- [ ] Recipe editor with syntax highlighting
-- [ ] Live variable system
-- [ ] Ingredient list with dynamic calculations
-- [ ] Step-by-step execution engine
-- [ ] Console output component
-- [ ] Timer functionality
+### Phase 2: Core Features ✅
+- [x] Recipe editor with live code editing
+- [x] Live variable system with bidirectional sync
+- [x] Ingredient list with dynamic calculations
+- [x] Step-by-step execution engine
+- [x] Console output component
+- [x] Timer functionality with play/pause/stop
 
-### Phase 3: UI/UX Polish
-- [ ] IDE-style theme implementation
-- [ ] Tooltips and help system
-- [ ] Dev Mode / Chef Mode toggle
-- [ ] Responsive design (mobile/tablet)
+### Phase 3: UI/UX Polish ✅
+- [x] IDE-style theme implementation (VS Code Dark+)
+- [x] Responsive design (mobile/tablet/desktop)
+- [x] Error display and validation
+- [x] Interactive variable controls (sliders + number inputs)
 
-### Phase 4: Content & Enhancement
-- [ ] Demo recipes (Pancakes, Spaghetti, Cookies)
+### Phase 4: Content & Enhancement ✅
+- [x] Demo recipes (Pancakes, Spaghetti, Cookies, Broccoli Fusilli)
+- [x] Recipe loading system
+- [x] Real-time ingredient emoji mapping
 - [ ] Recipe sharing/loading from localStorage
 - [ ] Framer Motion animations
-- [ ] Accessibility improvements
+- [ ] Accessibility improvements (ARIA labels, keyboard nav)
 
 ### Phase 5: Future Extensions
+- [ ] Syntax highlighting in editor
 - [ ] AI recipe generation
 - [ ] Voice commands
-- [ ] Recipe validation
+- [ ] Recipe validation and suggestions
 - [ ] Export to Markdown/PDF
+- [ ] Dev Mode / Chef Mode toggle
+- [ ] Recipe comments and notes
 
 ---
 
@@ -113,23 +131,31 @@ serve("warm with syrup");
 devgourmet/
 ├── src/
 │   ├── components/          # React components
-│   │   ├── RecipeEditor/   # Code editor
-│   │   ├── IngredientList/ # Dynamic ingredients
-│   │   ├── StepExecutor/   # Step-by-step UI
-│   │   ├── Console/        # Execution log
-│   │   └── Timer/          # Interactive timer
-│   ├── parser/             # DevScript language
-│   │   ├── lexer.ts       # Tokenization
-│   │   ├── parser.ts      # AST generation
-│   │   └── interpreter.ts # Recipe execution
+│   │   ├── RecipeEditor/   # Live code editor with debounce
+│   │   ├── IngredientList/ # Dynamic ingredients with variable controls
+│   │   ├── StepExecutor/   # Step-by-step navigation UI
+│   │   ├── Console/        # Execution log with message filtering
+│   │   └── Timer/          # Interactive timer with play/pause/stop
+│   ├── parser/             # DevScript language implementation
+│   │   ├── lexer.ts       # Tokenization (22 token types)
+│   │   ├── parser.ts      # AST generation with expression parsing
+│   │   └── interpreter.ts # Recipe execution with 15+ built-in functions
 │   ├── types/             # TypeScript definitions
-│   ├── utils/             # Helper functions
-│   ├── hooks/             # Custom React hooks
-│   ├── context/           # React context
-│   ├── recipes/           # Demo recipes
-│   └── App.tsx            # Main app component
-├── CLAUDE.md              # Development guide
-├── APP_FEATURES.md        # Feature specifications
+│   │   ├── tokens.ts      # Token and TokenType definitions
+│   │   ├── ast.ts         # AST node types
+│   │   └── recipe.ts      # Recipe state and execution types
+│   ├── context/           # State management
+│   │   └── RecipeContext.tsx  # Global recipe state with React Context
+│   ├── recipes/           # Demo recipe collection
+│   │   ├── pancakes.ts
+│   │   ├── spaghetti.ts
+│   │   ├── cookies.ts
+│   │   ├── broccoli-fusilli.ts
+│   │   └── index.ts
+│   ├── App.tsx            # Main app with responsive layout
+│   └── index.css          # Tailwind imports + CSS variables
+├── CLAUDE.md              # Development guide for AI assistants
+├── APP_FEATURES.md        # Complete feature specifications
 └── README.md              # This file
 ```
 
@@ -137,12 +163,22 @@ devgourmet/
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: [Bun](https://bun.sh)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Framework**: [React 19](https://react.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) *(coming soon)*
+- **Runtime**: [Bun](https://bun.sh) v1.0+ (package manager & runtime)
+- **Build Tool**: [Vite](https://vitejs.dev/) 6.0+ (fast dev server & build)
+- **Framework**: [React 19](https://react.dev/) (with hooks & context)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) 5.6+ (strict mode)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (with @tailwindcss/vite plugin)
+- **State Management**: React Context API (RecipeContext)
+- **Parser**: Custom implementation (Lexer → Parser → Interpreter)
+- **Animations**: CSS transitions + Tailwind utilities
+
+### Key Implementation Details
+
+- **Debounced Updates**: 500ms debounce on code editor changes to optimize re-parsing
+- **Bidirectional Sync**: Variable changes update both code and UI via regex-based line replacement
+- **Timer System**: Client-side countdown with start/pause/resume/stop controls
+- **Responsive Layout**: Flexbox with Tailwind breakpoints (mobile: stacked, desktop: split-pane)
+- **Error Handling**: Comprehensive try-catch with user-friendly error messages
 
 ---
 
