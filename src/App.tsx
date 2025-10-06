@@ -38,13 +38,13 @@ function AppContent() {
             <header
                 className="flex flex-col sm:flex-row items-start sm:items-center justify-between pr-4 py-3  bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
                 <div className="flex items-center gap-2">
-                    <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-10 h-10 ml-4"/>
+                    <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-10 h-10" style={{marginLeft: '12px'}}/>
                     <h1 className="text-xl font-bold">
                         <span className="text-[var(--color-keyword)]">Dev</span>
                         <span className="text-[var(--color-function)]">Gourmet</span>
                     </h1>
                     <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden sm:inline">
-            v1.0.0
+            v0.0.1
           </span>
                 </div>
 

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  devgourmet:
+    image: nginx:alpine
+    container_name: devgourmet
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./app:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - devgourmet-network
+
+networks:
+  devgourmet-network:
+    driver: bridge

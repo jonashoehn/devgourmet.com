@@ -203,6 +203,75 @@ bun run lint
 
 ---
 
+## 🚀 Production Deployment
+
+### Build the Application
+
+```bash
+# Build for production
+bun run build
+```
+
+This creates optimized static files in the `dist/` directory.
+
+### Deploy to VPS with Docker
+
+The project includes Docker Compose configuration for easy deployment with nginx.
+
+**Deploy to Contabo VPS:**
+
+```bash
+# 1. Build the project locally
+bun run build
+
+# 2. Sync files to VPS (run from project root)
+rsync -avz --delete \
+  --exclude 'node_modules' \
+  --exclude '.git' \
+  --exclude 'dist' \
+  ./dist/ root@your-vps-ip:/www/devgourmet.com/app/
+
+# 3. Sync Docker configuration
+rsync -avz \
+  docker-compose.yml \
+  nginx.conf \
+  root@your-vps-ip:/www/devgourmet.com/
+
+# 4. SSH into VPS and start containers
+ssh root@your-vps-ip
+cd /www/devgourmet.com
+docker-compose up -d
+```
+
+**Directory structure on VPS:**
+```
+/www/devgourmet.com/
+├── docker-compose.yml
+├── nginx.conf
+└── app/              # Static build artifacts from dist/
+    ├── index.html
+    ├── assets/
+    └── ...
+```
+
+**Useful Docker commands:**
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Restart container
+docker-compose restart
+
+# Stop containers
+docker-compose down
+
+# Update deployment (after new rsync)
+docker-compose up -d --force-recreate
+```
+
+---
+
 ## 🎨 Design System
 
 ### Color Palette
