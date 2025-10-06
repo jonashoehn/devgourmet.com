@@ -51,30 +51,29 @@ export function Console() {
       </div>
 
       {/* Console Messages */}
-      <div className="flex-1 overflow-auto p-2 font-mono text-xs">
-        {consoleMessages.length === 0 ? (
+      <div className="flex-1 overflow-auto p-2 font-mono text-xs" style={{overflow: 'auto'}}>
+        {consoleMessages.length === 0 && (
           <div className="flex items-center justify-center h-full text-[var(--color-ide-text-muted)]">
             <div className="text-center">
               <div className="text-2xl mb-2">💬</div>
               <p>Console output will appear here</p>
             </div>
           </div>
-        ) : (
-          consoleMessages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`mb-1 leading-5 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-2 py-1 rounded transition-colors`}
-            >
-              <span className="mr-2">{getMessagePrefix(msg.type)}</span>
-              <span>{msg.message}</span>
-              {msg.line !== undefined && (
-                <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
-                  (line {msg.line})
-                </span>
-              )}
-            </div>
-          ))
         )}
+        {consoleMessages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`mb-1 leading-5 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-2 py-1 rounded transition-colors`}
+          >
+            <span className="mr-2">{getMessagePrefix(msg.type)}</span>
+            <span>{msg.message}</span>
+            {msg.line !== undefined && (
+              <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
+                (line {msg.line})
+              </span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
