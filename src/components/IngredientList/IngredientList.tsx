@@ -1,4 +1,4 @@
-import { useRecipe } from '../../context/index.js';
+import { useRecipe } from '../../context';
 
 export function IngredientList() {
   const { ingredients, variables, updateVariable } = useRecipe();

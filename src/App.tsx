@@ -1,10 +1,10 @@
 import {useState} from 'react';
-import {RecipeProvider, useRecipe} from './context/index.js';
-import {RecipeEditor} from './components/RecipeEditor/index.js';
-import {IngredientList} from './components/IngredientList/index.js';
-import {StepExecutor} from './components/StepExecutor/index.js';
-import {Console} from './components/Console/index.js';
-import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes/index.js';
+import {RecipeProvider, useRecipe} from './context';
+import {RecipeEditor} from './components/RecipeEditor';
+import {IngredientList} from './components/IngredientList';
+import {StepExecutor} from './components/StepExecutor';
+import {Console} from './components/Console';
+import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes';
 
 function AppContent() {
     const [currentRecipe, setCurrentRecipe] = useState('pancakes');
@@ -36,8 +36,9 @@ function AppContent() {
         <div className="h-screen flex flex-col bg-[var(--color-ide-bg)] text-[var(--color-ide-text)]">
             {/* Top Bar */}
             <header
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-3 gap-3 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
-                <div className="flex items-center gap-3">
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between pr-4 py-3  bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
+                <div className="flex items-center gap-2">
+                    <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-10 h-10 ml-4"/>
                     <h1 className="text-xl font-bold">
                         <span className="text-[var(--color-keyword)]">Dev</span>
                         <span className="text-[var(--color-function)]">Gourmet</span>
