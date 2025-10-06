@@ -33,6 +33,7 @@ export function IngredientList() {
                     value={variable.value}
                     onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value) || 0)}
                     className="flex-1 px-3 py-1.5 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] rounded text-[var(--color-number)] font-mono text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+                    style={{scrollMarginTop: '0px'}}
                   />
                   <input
                     type="range"
@@ -41,6 +42,7 @@ export function IngredientList() {
                     value={variable.value}
                     onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value))}
                     className="flex-1 accent-[var(--color-accent)]"
+                    style={{scrollMarginTop: '0px'}}
                   />
                 </div>
               ))}
