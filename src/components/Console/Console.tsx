@@ -1,9 +1,7 @@
-import { useRef } from 'react';
 import { useRecipe } from '../../context/index.js';
 
 export function Console() {
   const { consoleMessages, clearConsole } = useRecipe();
-  const consoleEndRef = useRef<HTMLDivElement>(null);
 
   const getMessageColor = (type: string) => {
     switch (type) {
@@ -62,23 +60,20 @@ export function Console() {
             </div>
           </div>
         ) : (
-          <>
-            {consoleMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`mb-1 leading-5 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-2 py-1 rounded transition-colors`}
-              >
-                <span className="mr-2">{getMessagePrefix(msg.type)}</span>
-                <span>{msg.message}</span>
-                {msg.line !== undefined && (
-                  <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
-                    (line {msg.line})
-                  </span>
-                )}
-              </div>
-            ))}
-            <div ref={consoleEndRef} />
-          </>
+          consoleMessages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`mb-1 leading-5 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-2 py-1 rounded transition-colors`}
+            >
+              <span className="mr-2">{getMessagePrefix(msg.type)}</span>
+              <span>{msg.message}</span>
+              {msg.line !== undefined && (
+                <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
+                  (line {msg.line})
+                </span>
+              )}
+            </div>
+          ))
         )}
       </div>
     </div>
