@@ -6,15 +6,21 @@ interface TimerProps {
 }
 
 export function Timer({line}: TimerProps) {
-    const {activeTimers, startTimer, pauseTimer, resumeTimer, stopTimer} = useRecipe();
+    const {steps, activeTimers, startTimer, pauseTimer, resumeTimer, stopTimer} = useRecipe();
     const [displayTime, setDisplayTime] = useState<number>(0);
 
     const timer = activeTimers.get(line);
+    const step = steps.find(s => s.line === line && s.isTimerStep);
 
     // Update display time
     useEffect(() => {
         if (!timer) {
-            setDisplayTime(0);
+            // If no timer but step has duration, show the duration
+            if (step?.duration) {
+                setDisplayTime(step.duration);
+            } else {
+                setDisplayTime(0);
+            }
             return;
         }
 
@@ -40,9 +46,10 @@ export function Timer({line}: TimerProps) {
         } else {
             setDisplayTime(timer.remaining);
         }
-    }, [timer, line, stopTimer]);
+    }, [timer, line, stopTimer, step]);
 
-    if (!timer) {
+    // Don't render if no step or duration
+    if (!step?.duration) {
         return null;
     }
 
@@ -52,7 +59,8 @@ export function Timer({line}: TimerProps) {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const progress = ((timer.duration - displayTime) / timer.duration) * 100;
+    const duration = timer?.duration || step.duration || 0;
+    const progress = duration > 0 ? ((duration - displayTime) / duration) * 100 : 0;
 
     return (
         <div
@@ -72,7 +80,7 @@ export function Timer({line}: TimerProps) {
 
             {/* Control buttons */}
             <div className="flex gap-1">
-                {!timer.isRunning && !timer.isPaused && (
+                {!timer || (!timer.isRunning && !timer.isPaused) ? (
                     <button
                         onClick={() => startTimer(line)}
                         className="w-6 h-6 flex items-center justify-center text-[var(--color-success)] hover:bg-[var(--color-ide-bg)] rounded transition-colors"
@@ -80,9 +88,9 @@ export function Timer({line}: TimerProps) {
                     >
                         ▶
                     </button>
-                )}
+                ) : null}
 
-                {timer.isRunning && (
+                {timer?.isRunning && (
                     <button
                         onClick={() => pauseTimer(line)}
                         className="w-6 h-6 flex items-center justify-center text-[var(--color-warning)] hover:bg-[var(--color-ide-bg)] rounded transition-colors"
@@ -92,7 +100,7 @@ export function Timer({line}: TimerProps) {
                     </button>
                 )}
 
-                {timer.isPaused && (
+                {timer?.isPaused && (
                     <button
                         onClick={() => resumeTimer(line)}
                         className="w-6 h-6 flex items-center justify-center text-[var(--color-success)] hover:bg-[var(--color-ide-bg)] rounded transition-colors"
@@ -102,13 +110,15 @@ export function Timer({line}: TimerProps) {
                     </button>
                 )}
 
-                <button
-                    onClick={() => stopTimer(line)}
-                    className="w-6 h-6 flex items-center justify-center text-[var(--color-error)] hover:bg-[var(--color-ide-bg)] rounded transition-colors"
-                    title="Stop timer"
-                >
-                    ⏹
-                </button>
+                {timer && (
+                    <button
+                        onClick={() => stopTimer(line)}
+                        className="w-6 h-6 flex items-center justify-center text-[var(--color-error)] hover:bg-[var(--color-ide-bg)] rounded transition-colors"
+                        title="Stop timer"
+                    >
+                        ⏹
+                    </button>
+                )}
             </div>
         </div>
     );
