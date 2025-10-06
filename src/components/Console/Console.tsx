@@ -1,14 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRecipe } from '../../context/index.js';
 
 export function Console() {
   const { consoleMessages, clearConsole } = useRecipe();
   const consoleEndRef = useRef<HTMLDivElement>(null);
+  const consoleContainerRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Check if user is near bottom of console
+  const handleScroll = () => {
+    if (consoleContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = consoleContainerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+      setShouldAutoScroll(isNearBottom);
+    }
+  };
+
+  // Auto-scroll to bottom only if user was already at bottom
   useEffect(() => {
-    consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [consoleMessages]);
+    if (shouldAutoScroll && consoleEndRef.current) {
+      consoleEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [consoleMessages, shouldAutoScroll]);
 
   const getMessageColor = (type: string) => {
     switch (type) {
@@ -58,7 +71,11 @@ export function Console() {
       </div>
 
       {/* Console Messages */}
-      <div className="flex-1 overflow-auto p-2 font-mono text-xs">
+      <div
+        ref={consoleContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-auto p-2 font-mono text-xs"
+      >
         {consoleMessages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-[var(--color-ide-text-muted)]">
             <div className="text-center">
