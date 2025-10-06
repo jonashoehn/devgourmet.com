@@ -225,11 +225,11 @@ The project includes Docker Compose configuration for easy deployment with nginx
 bun run build
 
 # 2. Sync files to VPS (run from project root)
-rsync -avz --delete \
+ rsync -avz --delete \
   --exclude 'node_modules' \
   --exclude '.git' \
   --exclude 'dist' \
-  ./dist/ root@your-vps-ip:/www/devgourmet.com/app/
+  ./dist/ contabo:~/www/devgourmet.com/app/
 
 # 3. Sync Docker configuration
 rsync -avz \

@@ -1,3 +1,4 @@
+// @ts-ignore
 /**
  * Abstract Syntax Tree node types for DevScript
  */

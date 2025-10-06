@@ -4,7 +4,7 @@ import { useRecipe } from '../../context';
 export function RecipeEditor() {
   const { code, updateCode, errors } = useRecipe();
   const [localCode, setLocalCode] = useState(code);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync local code with context when it changes externally
   useEffect(() => {

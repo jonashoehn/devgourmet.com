@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useRecipe } from '../../context/index.js';
-import { Timer } from '../Timer/index.js';
+import { useRecipe } from '../../context';
+import { Timer } from '../Timer';
 import confetti from 'canvas-confetti';
 
 export function StepExecutor() {
-  const { steps, currentStepIndex, setCurrentStep, nextStep, previousStep, startTimer } = useRecipe();
+  const { steps, currentStepIndex, setCurrentStep, nextStep, previousStep } = useRecipe();
   const hasShownConfetti = useRef(false);
 
   // Trigger confetti when reaching the last step

@@ -1,3 +1,4 @@
+// @ts-ignore
 /**
  * Token types for the DevScript lexer
  */

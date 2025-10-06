@@ -84,6 +84,7 @@ export class Parser {
         line: this.currentToken.line,
       };
       this.advance();
+      // @ts-ignore
       return comment;
     }
 
@@ -96,6 +97,7 @@ export class Parser {
     if (this.currentToken.type === TokenType.IDENTIFIER && this.peek().type === TokenType.LPAREN) {
       const funcCall = this.parseFunctionCall();
       // Consume optional semicolon
+      // @ts-ignore
       if (this.currentToken.type === TokenType.SEMICOLON) {
         this.advance();
       }

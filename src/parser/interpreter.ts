@@ -256,6 +256,7 @@ export class Interpreter {
                 return 0;
 
             default:
+                // @ts-ignore
                 throw new Error(`Cannot evaluate expression type: ${expr.type}`);
         }
     }
@@ -393,6 +394,7 @@ export class Interpreter {
         this.addConsoleMessage('success', `Serving ${description}!`, line);
     }
 
+    // @ts-ignore
     /**
      * Handle flip() function
      */

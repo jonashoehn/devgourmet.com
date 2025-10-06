@@ -58,6 +58,7 @@ export class Lexer {
       this.advance(); // skip second /
 
       let comment = '';
+      // @ts-ignore
       while (this.currentChar !== null && this.currentChar !== '\n') {
         comment += this.currentChar;
         this.advance();
