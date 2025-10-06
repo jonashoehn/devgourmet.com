@@ -41,6 +41,9 @@ body {
   background-color: var(--color-ide-bg);
   color: var(--color-ide-text);
   min-height: 100vh;
+  /* Prevent layout shift when mobile keyboard appears */
+  height: 100vh;
+  overflow: hidden;
 }
 
 code, pre {
