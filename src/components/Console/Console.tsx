@@ -77,7 +77,7 @@ export function Console() {
                 <span>{msg.message}</span>
                 {msg.line !== undefined && (
                   <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
-                    :{msg.line}
+                    (line {msg.line})
                   </span>
                 )}
               </div>

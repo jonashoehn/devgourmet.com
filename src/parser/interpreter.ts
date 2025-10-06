@@ -180,7 +180,8 @@ export class Interpreter {
                     break;
                 case 'cook':
                 case 'bake':
-                    this.handleCook(node.name.toLowerCase() as 'cook' | 'bake', args, node.line);
+                case 'simmer':
+                    this.handleCook(node.name.toLowerCase() as 'cook' | 'bake' | 'simmer', args, node.line);
                     break;
                 case 'rest':
                 case 'wait':
@@ -271,12 +272,13 @@ export class Interpreter {
         const name = String(args[0]);
         const amount = Number(args[1]);
         const unit = args.length > 2 ? String(args[2]) : '';
+        const roundedAmount = Math.round(amount * 100) / 100; // Round to 2 decimals
 
         const emoji = INGREDIENT_EMOJIS[name.toLowerCase()] || '🍽️';
 
         this.ingredients.push({
             name,
-            amount: Math.round(amount * 100) / 100, // Round to 2 decimals
+            amount: roundedAmount,
             unit,
             line,
             emoji,
@@ -284,12 +286,12 @@ export class Interpreter {
 
         this.steps.push({
             type: 'add',
-            description: `Add ${amount}${unit ? ' ' + unit : ''} ${name}`,
+            description: `Add ${roundedAmount}${unit ? ' ' + unit : ''} ${name}`,
             line,
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> Added ${amount}${unit ? unit : ''} ${name}`, line);
+        this.addConsoleMessage('info', `Added ${roundedAmount}${unit ? ' ' + unit : ''} ${name}`, line);
     }
 
     /**
@@ -305,13 +307,13 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> Mixing ${description}...`, line);
+        this.addConsoleMessage('info', `Mixing ${description}...`, line);
     }
 
     /**
-     * Handle cook/bake() function with timer
+     * Handle cook/bake/simmer() function with timer
      */
-    private handleCook(type: 'cook' | 'bake', args: (string | number)[], line: number): void {
+    private handleCook(type: 'cook' | 'bake' | 'simmer', args: (string | number)[], line: number): void {
         if (args.length < 1) {
             this.addError(`${type}() requires duration argument`, line);
             return;
@@ -319,6 +321,7 @@ export class Interpreter {
 
         const duration = Number(args[0]);
         const unit = args.length > 1 ? String(args[1]) : 'minutes';
+        const description = args.length > 2 ? String(args[2]) : '';
 
         // Convert to seconds
         let durationInSeconds = duration;
@@ -328,16 +331,19 @@ export class Interpreter {
             durationInSeconds = duration * 3600;
         }
 
+        const actionName = type === 'cook' ? 'Cook' : type === 'bake' ? 'Bake' : 'Simmer';
+        const actionVerb = type === 'cook' ? 'Cooking' : type === 'bake' ? 'Baking' : 'Simmering';
+
         this.steps.push({
             type,
-            description: `${type === 'cook' ? 'Cook' : 'Bake'} for ${duration} ${unit}`,
+            description: `${actionName} for ${duration} ${unit}${description ? ' - ' + description : ''}`,
             line,
             duration: durationInSeconds,
             durationUnit: unit,
             isTimerStep: true,
         });
 
-        this.addConsoleMessage('info', `> ${type === 'cook' ? 'Cooking' : 'Baking'} for ${duration} ${unit}...`, line);
+        this.addConsoleMessage('info', `${actionVerb} for ${duration} ${unit}${description ? ' - ' + description : ''}...`, line);
     }
 
     /**
@@ -368,7 +374,7 @@ export class Interpreter {
             isTimerStep: true,
         });
 
-        this.addConsoleMessage('info', `> Resting for ${duration} ${unit}...`, line);
+        this.addConsoleMessage('info', `Resting for ${duration} ${unit}...`, line);
     }
 
     /**
@@ -384,7 +390,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('success', `> Serving ${description}!`, line);
+        this.addConsoleMessage('success', `Serving ${description}!`, line);
     }
 
     /**
@@ -398,7 +404,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', '> Flipping...', line);
+        this.addConsoleMessage('info', 'Flipping...', line);
     }
 
     /**
@@ -414,7 +420,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> Stirring ${description}...`, line);
+        this.addConsoleMessage('info', `Stirring ${description}...`, line);
     }
 
     /**
@@ -430,7 +436,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> Pouring ${description}...`, line);
+        this.addConsoleMessage('info', `Pouring ${description}...`, line);
     }
 
     /**
@@ -446,7 +452,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> Seasoning ${description}...`, line);
+        this.addConsoleMessage('info', `Seasoning ${description}...`, line);
     }
 
     /**
@@ -462,7 +468,7 @@ export class Interpreter {
             isTimerStep: false,
         });
 
-        this.addConsoleMessage('info', `> ${name}(${description})`, line);
+        this.addConsoleMessage('info', `${name}(${description})`, line);
     }
 
     /**

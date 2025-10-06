@@ -1,8 +1,50 @@
+import { useEffect, useRef } from 'react';
 import { useRecipe } from '../../context/index.js';
 import { Timer } from '../Timer/index.js';
+import confetti from 'canvas-confetti';
 
 export function StepExecutor() {
   const { steps, currentStepIndex, setCurrentStep, nextStep, previousStep, startTimer } = useRecipe();
+  const hasShownConfetti = useRef(false);
+
+  // Trigger confetti when reaching the last step
+  useEffect(() => {
+    if (steps.length > 0 && currentStepIndex === steps.length - 1 && !hasShownConfetti.current) {
+      hasShownConfetti.current = true;
+
+      // Fire confetti burst
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#569cd6', '#dcdcaa', '#ce9178', '#b5cea8', '#007acc']
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#569cd6', '#dcdcaa', '#ce9178', '#b5cea8', '#007acc']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+
+      frame();
+    }
+
+    // Reset when leaving last step
+    if (currentStepIndex < steps.length - 1) {
+      hasShownConfetti.current = false;
+    }
+  }, [currentStepIndex, steps.length]);
 
   const getStepIcon = (type: string) => {
     switch (type) {
