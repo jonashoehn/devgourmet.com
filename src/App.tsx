@@ -5,6 +5,7 @@ import {IngredientList} from './components/IngredientList';
 import {StepExecutor} from './components/StepExecutor';
 import {Console} from './components/Console';
 import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 
 function AppContent() {
     const [currentRecipe, setCurrentRecipe] = useState('pancakes');
@@ -73,27 +74,73 @@ function AppContent() {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-                {/* Left Panel - Editor */}
-                <div
-                    className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-[var(--color-ide-border)] h-1/2 lg:h-full">
-                    <RecipeEditor/>
+                {/* Mobile/Tablet View - Tabs */}
+                <div className="flex-1 flex flex-col lg:hidden">
+                    <Tabs defaultValue="editor" className="flex-1 flex flex-col">
+                        <TabsList className="w-full justify-start rounded-none border-b border-[var(--color-ide-border)] bg-[var(--color-ide-bg-lighter)] p-0 h-auto">
+                            <TabsTrigger
+                                value="editor"
+                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
+                            >
+                                📝 Editor
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="ingredients"
+                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
+                            >
+                                🥘 Ingredients
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="steps"
+                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
+                            >
+                                📋 Steps
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="console"
+                                className="rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
+                            >
+                                💻 Console
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="editor" className="flex-1 overflow-auto m-0 border-0">
+                            <RecipeEditor/>
+                        </TabsContent>
+                        <TabsContent value="ingredients" className="flex-1 overflow-auto m-0 border-0">
+                            <IngredientList/>
+                        </TabsContent>
+                        <TabsContent value="steps" className="flex-1 overflow-auto m-0 border-0">
+                            <StepExecutor/>
+                        </TabsContent>
+                        <TabsContent value="console" className="flex-1 overflow-auto m-0 border-0">
+                            <Console/>
+                        </TabsContent>
+                    </Tabs>
                 </div>
 
-                {/* Right Panel - Output */}
-                <div className="w-full lg:w-1/2 flex flex-col h-1/2 lg:h-full">
-                    {/* Top Right - Ingredients & Variables */}
-                    <div className="flex-1 lg:h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
-                        <IngredientList/>
+                {/* Desktop View - Split Panes */}
+                <div className="hidden lg:flex flex-1 overflow-hidden">
+                    {/* Left Panel - Editor */}
+                    <div className="w-1/2 flex flex-col border-r border-[var(--color-ide-border)]">
+                        <RecipeEditor/>
                     </div>
 
-                    {/* Middle Right - Steps */}
-                    <div className="flex-1 lg:h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
-                        <StepExecutor/>
-                    </div>
+                    {/* Right Panel - Output */}
+                    <div className="w-1/2 flex flex-col">
+                        {/* Top Right - Ingredients & Variables */}
+                        <div className="h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
+                            <IngredientList/>
+                        </div>
 
-                    {/* Bottom Right - Console */}
-                    <div className="flex-1 lg:h-1/3 overflow-auto">
-                        <Console/>
+                        {/* Middle Right - Steps */}
+                        <div className="h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
+                            <StepExecutor/>
+                        </div>
+
+                        {/* Bottom Right - Console */}
+                        <div className="h-1/3 overflow-auto">
+                            <Console/>
+                        </div>
                     </div>
                 </div>
             </div>

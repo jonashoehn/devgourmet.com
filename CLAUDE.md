@@ -14,6 +14,7 @@ DevGourmet is an interactive recipe application that transforms cooking recipes 
 - **Styling**: Tailwind CSS v4
 
 ### Key Libraries
+- **UI Components**: shadcn/ui (pre-configured with Tailwind v4)
 - **Animations**: Framer Motion (to be added later)
 - **State Management**: React hooks + Context API
 - **Parsing**: Custom recipe DSL parser
@@ -32,6 +33,7 @@ DevGourmet is an interactive recipe application that transforms cooking recipes 
 ```
 src/
 ├── components/          # React components
+│   ├── ui/             # shadcn/ui components (tabs, accordion, etc.)
 │   ├── RecipeEditor/   # Code editor component
 │   ├── IngredientList/ # Dynamic ingredient display
 │   ├── StepExecutor/   # Step-by-step execution UI
@@ -41,8 +43,8 @@ src/
 │   ├── lexer.ts       # Tokenization
 │   ├── parser.ts      # AST generation
 │   └── interpreter.ts # Recipe execution logic
+├── lib/               # Utility functions (includes shadcn utils)
 ├── types/             # TypeScript definitions
-├── utils/             # Helper functions
 ├── hooks/             # Custom React hooks
 ├── context/           # React context providers
 ├── recipes/           # Demo recipe files
@@ -64,6 +66,12 @@ bun add tailwindcss@next @tailwindcss/vite@next
 
 # Add development dependencies
 bun add -d @types/node
+
+# Initialize shadcn/ui (already configured)
+bunx --bun shadcn@latest init
+
+# Add shadcn components as needed
+bunx --bun shadcn@latest add [component-name]
 ```
 
 ### Development Commands
@@ -122,6 +130,10 @@ A simple, readable recipe DSL that looks like JavaScript:
 - Custom hooks for complex logic
 - Context for global state
 - Props interfaces for all components
+- **shadcn/ui Integration**: Use pre-built accessible components (tabs, accordion, dialog, etc.)
+  - Import from `@/components/ui/[component-name]`
+  - Customize with Tailwind classes to match IDE theme
+  - Components support CSS variables for theming
 
 ## Performance Considerations
 
