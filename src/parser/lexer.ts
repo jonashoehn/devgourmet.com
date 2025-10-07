@@ -1,4 +1,4 @@
-import {type Token, TokenType} from '../types';
+import type {Token} from '../types';
 
 /**
  * Lexer for DevScript language
@@ -65,7 +65,7 @@ export class Lexer {
       }
 
       return {
-        type: TokenType.COMMENT,
+        type: 'COMMENT',
         value: comment.trim(),
         line: startLine,
         column: startColumn,
@@ -88,7 +88,7 @@ export class Lexer {
     }
 
     return {
-      type: TokenType.NUMBER,
+      type: 'NUMBER',
       value: parseFloat(numStr),
       line: startLine,
       column: startColumn,
@@ -121,7 +121,7 @@ export class Lexer {
     }
 
     return {
-      type: TokenType.STRING,
+      type: 'STRING',
       value: str,
       line: startLine,
       column: startColumn,
@@ -142,11 +142,11 @@ export class Lexer {
     }
 
     // Check for keywords
-    let type = TokenType.IDENTIFIER;
+    let type: Token['type'] = 'IDENTIFIER';
     if (id === 'let') {
-      type = TokenType.LET;
+      type = 'LET';
     } else if (id === 'const') {
-      type = TokenType.CONST;
+      type = 'CONST';
     }
 
     return {
@@ -171,7 +171,7 @@ export class Lexer {
       // Newline
       if (this.currentChar === '\n') {
         const token: Token = {
-          type: TokenType.NEWLINE,
+          type: 'NEWLINE',
           value: '\n',
           line: this.line,
           column: this.column,
@@ -204,7 +204,7 @@ export class Lexer {
       // Operators and punctuation
       const char = this.currentChar;
       const token: Token = {
-        type: TokenType.EOF,
+        type: 'EOF',
         value: char,
         line: this.line,
         column: this.column,
@@ -212,31 +212,31 @@ export class Lexer {
 
       switch (char) {
         case '+':
-          token.type = TokenType.PLUS;
+          token.type = 'PLUS';
           break;
         case '-':
-          token.type = TokenType.MINUS;
+          token.type = 'MINUS';
           break;
         case '*':
-          token.type = TokenType.MULTIPLY;
+          token.type = 'MULTIPLY';
           break;
         case '/':
-          token.type = TokenType.DIVIDE;
+          token.type = 'DIVIDE';
           break;
         case '=':
-          token.type = TokenType.ASSIGN;
+          token.type = 'ASSIGN';
           break;
         case '(':
-          token.type = TokenType.LPAREN;
+          token.type = 'LPAREN';
           break;
         case ')':
-          token.type = TokenType.RPAREN;
+          token.type = 'RPAREN';
           break;
         case ',':
-          token.type = TokenType.COMMA;
+          token.type = 'COMMA';
           break;
         case ';':
-          token.type = TokenType.SEMICOLON;
+          token.type = 'SEMICOLON';
           break;
         default:
           // Unknown character - skip it
@@ -250,7 +250,7 @@ export class Lexer {
 
     // End of file
     return {
-      type: TokenType.EOF,
+      type: 'EOF',
       value: '',
       line: this.line,
       column: this.column,
@@ -264,7 +264,7 @@ export class Lexer {
     const tokens: Token[] = [];
     let token = this.getNextToken();
 
-    while (token.type !== TokenType.EOF) {
+    while (token.type !== 'EOF') {
       tokens.push(token);
       token = this.getNextToken();
     }

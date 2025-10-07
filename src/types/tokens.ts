@@ -1,37 +1,30 @@
-// @ts-ignore
 /**
  * Token types for the DevScript lexer
  */
-export enum TokenType {
+export type TokenType =
   // Literals
-  NUMBER = 'NUMBER',
-  STRING = 'STRING',
-  IDENTIFIER = 'IDENTIFIER',
-
+  | 'NUMBER'
+  | 'STRING'
+  | 'IDENTIFIER'
   // Keywords
-  LET = 'LET',
-  CONST = 'CONST',
-
+  | 'LET'
+  | 'CONST'
   // Operators
-  PLUS = 'PLUS',
-  MINUS = 'MINUS',
-  MULTIPLY = 'MULTIPLY',
-  DIVIDE = 'DIVIDE',
-  ASSIGN = 'ASSIGN',
-
+  | 'PLUS'
+  | 'MINUS'
+  | 'MULTIPLY'
+  | 'DIVIDE'
+  | 'ASSIGN'
   // Punctuation
-  LPAREN = 'LPAREN',
-  RPAREN = 'RPAREN',
-  COMMA = 'COMMA',
-  SEMICOLON = 'SEMICOLON',
-
+  | 'LPAREN'
+  | 'RPAREN'
+  | 'COMMA'
+  | 'SEMICOLON'
   // Comments
-  COMMENT = 'COMMENT',
-
+  | 'COMMENT'
   // Special
-  EOF = 'EOF',
-  NEWLINE = 'NEWLINE',
-}
+  | 'EOF'
+  | 'NEWLINE';
 
 /**
  * Represents a single token from the lexer

@@ -1,6 +1,5 @@
 import {
     type ASTNode,
-    ASTNodeType,
     type BinaryExpression,
     type ConsoleMessage,
     type Expression,
@@ -112,13 +111,13 @@ export class Interpreter {
      */
     private executeStatement(node: ASTNode): void {
         switch (node.type) {
-            case ASTNodeType.VARIABLE_DECLARATION:
+            case 'VARIABLE_DECLARATION':
                 this.executeVariableDeclaration(node as VariableDeclaration);
                 break;
-            case ASTNodeType.FUNCTION_CALL:
+            case 'FUNCTION_CALL':
                 this.executeFunctionCall(node as FunctionCall);
                 break;
-            case ASTNodeType.COMMENT:
+            case 'COMMENT':
                 // Comments don't execute
                 break;
             default:
@@ -216,10 +215,10 @@ export class Interpreter {
      */
     private evaluateExpression(expr: Expression): string | number {
         switch (expr.type) {
-            case ASTNodeType.LITERAL:
+            case 'LITERAL':
                 return (expr as Literal).value;
 
-            case ASTNodeType.IDENTIFIER: {
+            case 'IDENTIFIER': {
                 const name = (expr as Identifier).name;
                 const variable = this.variables.get(name);
                 if (!variable) {
@@ -228,7 +227,7 @@ export class Interpreter {
                 return variable.value;
             }
 
-            case ASTNodeType.BINARY_EXPRESSION: {
+            case 'BINARY_EXPRESSION': {
                 const binExpr = expr as BinaryExpression;
                 const left = this.evaluateExpression(binExpr.left);
                 const right = this.evaluateExpression(binExpr.right);
@@ -251,7 +250,7 @@ export class Interpreter {
                 }
             }
 
-            case ASTNodeType.FUNCTION_CALL:
+            case 'FUNCTION_CALL':
                 // For function calls in expressions, return 0 (shouldn't happen often)
                 return 0;
 
@@ -394,11 +393,10 @@ export class Interpreter {
         this.addConsoleMessage('success', `Serving ${description}!`, line);
     }
 
-    // @ts-ignore
     /**
      * Handle flip() function
      */
-    private handleFlip(args: (string | number)[], line: number): void {
+    private handleFlip(_args: (string | number)[], line: number): void {
         this.steps.push({
             type: 'flip',
             description: 'Flip',

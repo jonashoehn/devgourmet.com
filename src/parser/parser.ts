@@ -1,11 +1,10 @@
-import {TokenType, type Token, type Program} from "../types";
+import {type Token, type Program, type TokenType} from "../types";
 import {
   type ASTNode,
-  ASTNodeType,
   type BinaryExpression,
   type Expression,
   type FunctionCall, type Identifier, type Literal,
-  type VariableDeclaration
+  type VariableDeclaration, type Comment
 } from "../types";
 
 /**
@@ -18,7 +17,7 @@ export class Parser {
   private currentToken: Token;
 
   constructor(tokens: Token[]) {
-    this.tokens = tokens.filter(t => t.type !== TokenType.NEWLINE); // Filter out newlines for easier parsing
+    this.tokens = tokens.filter(t => t.type !== 'NEWLINE'); // Filter out newlines for easier parsing
     this.currentToken = this.tokens[0];
   }
 
@@ -58,7 +57,7 @@ export class Parser {
   public parse(): Program {
     const body: ASTNode[] = [];
 
-    while (this.currentToken.type !== TokenType.EOF) {
+    while (this.currentToken.type !== 'EOF') {
       const statement = this.parseStatement();
       if (statement) {
         body.push(statement);
@@ -66,7 +65,7 @@ export class Parser {
     }
 
     return {
-      type: ASTNodeType.PROGRAM,
+      type: 'PROGRAM',
       body,
       line: 1,
     };
@@ -77,28 +76,27 @@ export class Parser {
    */
   private parseStatement(): ASTNode | null {
     // Comment
-    if (this.currentToken.type === TokenType.COMMENT) {
+    if (this.currentToken.type === 'COMMENT') {
       const comment: Comment = {
-        type: ASTNodeType.COMMENT,
+        type: 'COMMENT',
         text: String(this.currentToken.value),
         line: this.currentToken.line,
       };
       this.advance();
-      // @ts-ignore
       return comment;
     }
 
     // Variable declaration
-    if (this.currentToken.type === TokenType.LET || this.currentToken.type === TokenType.CONST) {
+    if (this.currentToken.type === 'LET' || this.currentToken.type === 'CONST') {
       return this.parseVariableDeclaration();
     }
 
     // Function call
-    if (this.currentToken.type === TokenType.IDENTIFIER && this.peek().type === TokenType.LPAREN) {
+    if (this.currentToken.type === 'IDENTIFIER' && this.peek().type === 'LPAREN') {
       const funcCall = this.parseFunctionCall();
       // Consume optional semicolon
       // @ts-ignore
-      if (this.currentToken.type === TokenType.SEMICOLON) {
+      if (this.currentToken.type === 'SEMICOLON') {
         this.advance();
       }
       return funcCall;
@@ -113,24 +111,24 @@ export class Parser {
    * Parse variable declaration: let x = 5;
    */
   private parseVariableDeclaration(): VariableDeclaration {
-    const kind = this.currentToken.type === TokenType.LET ? 'let' : 'const';
+    const kind = this.currentToken.type === 'LET' ? 'let' : 'const';
     const line = this.currentToken.line;
     this.advance(); // skip let/const
 
-    const nameToken = this.expect(TokenType.IDENTIFIER);
+    const nameToken = this.expect('IDENTIFIER');
     const name = String(nameToken.value);
 
-    this.expect(TokenType.ASSIGN);
+    this.expect('ASSIGN');
 
     const value = this.parseExpression();
 
     // Consume optional semicolon
-    if (this.currentToken.type === TokenType.SEMICOLON) {
+    if (this.currentToken.type === 'SEMICOLON') {
       this.advance();
     }
 
     return {
-      type: ASTNodeType.VARIABLE_DECLARATION,
+      type: 'VARIABLE_DECLARATION',
       name,
       value,
       kind,
@@ -142,28 +140,28 @@ export class Parser {
    * Parse function call: add("flour", 200, "grams")
    */
   private parseFunctionCall(): FunctionCall {
-    const nameToken = this.expect(TokenType.IDENTIFIER);
+    const nameToken = this.expect('IDENTIFIER');
     const name = String(nameToken.value);
     const line = nameToken.line;
 
-    this.expect(TokenType.LPAREN);
+    this.expect('LPAREN');
 
     const args: Expression[] = [];
 
     // Parse arguments
-    if (this.currentToken.type !== TokenType.RPAREN) {
+    if (this.currentToken.type !== 'RPAREN') {
       args.push(this.parseExpression());
 
-      while (this.currentToken.type === TokenType.COMMA) {
+      while (this.currentToken.type === 'COMMA') {
         this.advance(); // skip comma
         args.push(this.parseExpression());
       }
     }
 
-    this.expect(TokenType.RPAREN);
+    this.expect('RPAREN');
 
     return {
-      type: ASTNodeType.FUNCTION_CALL,
+      type: 'FUNCTION_CALL',
       name,
       arguments: args,
       line,
@@ -183,13 +181,13 @@ export class Parser {
   private parseAdditiveExpression(): Expression {
     let left = this.parseMultiplicativeExpression();
 
-    while (this.currentToken.type === TokenType.PLUS || this.currentToken.type === TokenType.MINUS) {
-      const operator = this.currentToken.type === TokenType.PLUS ? '+' : '-';
+    while (this.currentToken.type === 'PLUS' || this.currentToken.type === 'MINUS') {
+      const operator = this.currentToken.type === 'PLUS' ? '+' : '-';
       const line = this.currentToken.line;
       this.advance();
       const right = this.parseMultiplicativeExpression();
       left = {
-        type: ASTNodeType.BINARY_EXPRESSION,
+        type: 'BINARY_EXPRESSION',
         left,
         operator,
         right,
@@ -206,13 +204,13 @@ export class Parser {
   private parseMultiplicativeExpression(): Expression {
     let left = this.parsePrimaryExpression();
 
-    while (this.currentToken.type === TokenType.MULTIPLY || this.currentToken.type === TokenType.DIVIDE) {
-      const operator = this.currentToken.type === TokenType.MULTIPLY ? '*' : '/';
+    while (this.currentToken.type === 'MULTIPLY' || this.currentToken.type === 'DIVIDE') {
+      const operator = this.currentToken.type === 'MULTIPLY' ? '*' : '/';
       const line = this.currentToken.line;
       this.advance();
       const right = this.parsePrimaryExpression();
       left = {
-        type: ASTNodeType.BINARY_EXPRESSION,
+        type: 'BINARY_EXPRESSION',
         left,
         operator,
         right,
@@ -228,9 +226,9 @@ export class Parser {
    */
   private parsePrimaryExpression(): Expression {
     // Number literal
-    if (this.currentToken.type === TokenType.NUMBER) {
+    if (this.currentToken.type === 'NUMBER') {
       const literal: Literal = {
-        type: ASTNodeType.LITERAL,
+        type: 'LITERAL',
         value: this.currentToken.value,
         valueType: 'number',
         line: this.currentToken.line,
@@ -240,9 +238,9 @@ export class Parser {
     }
 
     // String literal
-    if (this.currentToken.type === TokenType.STRING) {
+    if (this.currentToken.type === 'STRING') {
       const literal: Literal = {
-        type: ASTNodeType.LITERAL,
+        type: 'LITERAL',
         value: this.currentToken.value,
         valueType: 'string',
         line: this.currentToken.line,
@@ -252,14 +250,14 @@ export class Parser {
     }
 
     // Identifier or function call
-    if (this.currentToken.type === TokenType.IDENTIFIER) {
+    if (this.currentToken.type === 'IDENTIFIER') {
       // Check if it's a function call
-      if (this.peek().type === TokenType.LPAREN) {
+      if (this.peek().type === 'LPAREN') {
         return this.parseFunctionCall();
       }
       // Otherwise, it's an identifier
       const identifier: Identifier = {
-        type: ASTNodeType.IDENTIFIER,
+        type: 'IDENTIFIER',
         name: String(this.currentToken.value),
         line: this.currentToken.line,
       };
@@ -268,10 +266,10 @@ export class Parser {
     }
 
     // Parenthesized expression
-    if (this.currentToken.type === TokenType.LPAREN) {
+    if (this.currentToken.type === 'LPAREN') {
       this.advance(); // skip (
       const expr = this.parseExpression();
-      this.expect(TokenType.RPAREN);
+      this.expect('RPAREN');
       return expr;
     }
 

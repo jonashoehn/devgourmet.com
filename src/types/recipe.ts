@@ -17,7 +17,7 @@ export interface Ingredient {
 }
 
 export interface RecipeStep {
-  type: 'add' | 'mix' | 'cook' | 'rest' | 'bake' | 'serve' | 'flip' | 'other';
+  type: 'add' | 'mix' | 'cook' | 'rest' | 'bake' | 'serve' | 'flip' | 'simmer' | 'other';
   description: string;
   line: number;
   duration?: number; // in seconds
