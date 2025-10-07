@@ -95,25 +95,27 @@ export function Resources() {
               {resources.map((resource, index) => (
                 <div
                   key={resource.id}
-                  className="group cursor-pointer border border-[var(--color-ide-border)] hover:border-[var(--color-accent)] transition-all relative overflow-hidden"
+                  className="group cursor-pointer border border-[var(--color-ide-border)] hover:border-[var(--color-accent)] transition-all bg-[var(--color-ide-bg-lighter)]"
                   onClick={() => setSelectedIndex(index)}
-                  style={{
-                    aspectRatio: '1',
-                    backgroundImage: `url(${resource.url})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundColor: 'var(--color-ide-bg-lighter)'
-                  }}
+                  style={{ aspectRatio: '1', position: 'relative', overflow: 'hidden' }}
                 >
+                  {/* Background image */}
+                  <img
+                    src={resource.url}
+                    alt={resource.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ display: 'block' }}
+                  />
+
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all flex items-center justify-center">
-                    <div className="text-white opacity-0 group-hover:opacity-100 text-center px-2">
+                  <div className="absolute inset-0 group-hover:bg-black group-hover:bg-opacity-60 transition-all flex items-center justify-center pointer-events-none">
+                    <div className="text-white opacity-0 group-hover:opacity-100 text-center px-2 pointer-events-auto">
                       <div className="text-xs font-mono truncate">{resource.name}</div>
                     </div>
                   </div>
 
                   {/* Line number badge */}
-                  <div className="absolute top-1 right-1 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--color-ide-text-muted)]">
+                  <div className="absolute top-1 right-1 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--color-ide-text-muted)] z-10">
                     :{resource.line}
                   </div>
                 </div>
