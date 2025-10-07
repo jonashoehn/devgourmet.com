@@ -24,7 +24,7 @@ export function IngredientList() {
                 Variables
               </h3>
             </div>
-            <div className="px-4 py-3 space-y-3">
+            <div className="space-y-3" style={{ paddingTop: '12px', paddingBottom: '12px', paddingLeft: '12px', paddingRight: '16px' }}>
               {variableArray.map((variable) => (
                 <div key={variable.name} className="flex flex-col gap-2 py-2 border-b border-[var(--color-ide-border)] last:border-0">
                   <span className="text-sm font-mono text-[var(--color-variable)] font-semibold">
@@ -64,7 +64,8 @@ export function IngredientList() {
               {ingredients.map((ingredient, idx) => (
                 <div
                   key={`${ingredient.name}-${idx}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-ide-bg-lighter)] transition-colors cursor-default"
+                  className="flex items-center gap-3 hover:bg-[var(--color-ide-bg-lighter)] transition-colors cursor-default"
+                  style={{ paddingTop: '12px', paddingBottom: '12px', paddingLeft: '12px', paddingRight: '16px' }}
                 >
                   <span className="text-2xl flex-shrink-0">{ingredient.emoji}</span>
                   <div className="flex-1 min-w-0">

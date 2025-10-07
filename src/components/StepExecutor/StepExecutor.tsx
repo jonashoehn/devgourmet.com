@@ -110,7 +110,7 @@ export function StepExecutor() {
                 <div
                   key={`${step.line}-${index}`}
                   className={`
-                    flex items-start gap-3 px-4 py-3 transition-all cursor-pointer
+                    flex items-center gap-3 transition-all cursor-pointer
                     ${
                       isActive
                         ? 'bg-[#1a3a52] border-l-4 border-l-[var(--color-accent)]'
@@ -119,10 +119,11 @@ export function StepExecutor() {
                         : 'bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)] border-l-4 border-l-transparent'
                     }
                   `}
+                  style={{ paddingTop: '12px', paddingBottom: '12px', paddingLeft: '12px', paddingRight: '16px' }}
                   onClick={() => setCurrentStep(index)}
                 >
                   {/* Step number badge */}
-                  <div className="flex-shrink-0 mt-0.5">
+                  <div className="flex-shrink-0">
                     <div
                       className={`
                         w-7 h-7 flex items-center justify-center text-xs font-mono font-bold
