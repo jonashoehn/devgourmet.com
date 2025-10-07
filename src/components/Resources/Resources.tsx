@@ -95,37 +95,26 @@ export function Resources() {
               {resources.map((resource, index) => (
                 <div
                   key={resource.id}
-                  className="group cursor-pointer border border-[var(--color-ide-border)] hover:border-[var(--color-accent)] transition-all bg-[var(--color-ide-bg-lighter)]"
+                  className="group cursor-pointer border border-[var(--color-ide-border)] hover:border-[var(--color-accent)] transition-all relative overflow-hidden"
                   onClick={() => setSelectedIndex(index)}
-                  style={{ aspectRatio: '1' }}
+                  style={{
+                    aspectRatio: '1',
+                    backgroundImage: `url(${resource.url})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundColor: 'var(--color-ide-bg-lighter)'
+                  }}
                 >
-                  <div className="relative w-full h-full bg-[var(--color-ide-bg-lighter)]">
-                    {!imageLoaded[resource.id] && (
-                      <div className="absolute inset-0 flex items-center justify-center z-10 bg-[var(--color-ide-bg-lighter)]">
-                        <div className="text-4xl">🖼️</div>
-                      </div>
-                    )}
-                    <img
-                      src={resource.url}
-                      alt={resource.name}
-                      className="w-full h-full object-cover relative z-0"
-                      loading="lazy"
-                      onLoad={() => setImageLoaded(prev => ({ ...prev, [resource.id]: true }))}
-                      onError={(e) => {
-                        setImageLoaded(prev => ({ ...prev, [resource.id]: true }));
-                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23333" width="100" height="100"/%3E%3Ctext x="50" y="50" text-anchor="middle" fill="%23999" font-size="14"%3E❌%3C/text%3E%3C/svg%3E';
-                      }}
-                    />
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all flex items-center justify-center">
-                      <div className="text-white opacity-0 group-hover:opacity-100 text-center px-2">
-                        <div className="text-xs font-mono truncate">{resource.name}</div>
-                      </div>
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all flex items-center justify-center">
+                    <div className="text-white opacity-0 group-hover:opacity-100 text-center px-2">
+                      <div className="text-xs font-mono truncate">{resource.name}</div>
                     </div>
-                    {/* Line number badge */}
-                    <div className="absolute top-1 right-1 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--color-ide-text-muted)]">
-                      :{resource.line}
-                    </div>
+                  </div>
+
+                  {/* Line number badge */}
+                  <div className="absolute top-1 right-1 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--color-ide-text-muted)]">
+                    :{resource.line}
                   </div>
                 </div>
               ))}

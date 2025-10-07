@@ -78,38 +78,40 @@ function AppContent() {
                 {/* Mobile/Tablet View - Tabs */}
                 <div className="flex-1 flex flex-col lg:hidden min-h-0">
                     <Tabs defaultValue="editor" className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                        <TabsList className="w-full justify-start rounded-none border-b border-[var(--color-ide-border)] bg-[var(--color-ide-bg-lighter)] p-0 h-auto">
-                            <TabsTrigger
-                                value="editor"
-                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
-                            >
-                                📝 Editor
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="ingredients"
-                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
-                            >
-                                🥘 Ingredients
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="steps"
-                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
-                            >
-                                📋 Steps
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="resources"
-                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
-                            >
-                                🖼️ Resources
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="console"
-                                className="rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
-                            >
-                                💻 Console
-                            </TabsTrigger>
-                        </TabsList>
+                        <div className="overflow-x-auto overflow-y-hidden border-b border-[var(--color-ide-border)] bg-[var(--color-ide-bg-lighter)]" style={{ WebkitOverflowScrolling: 'touch' }}>
+                            <TabsList className="w-auto inline-flex justify-start rounded-none border-0 bg-transparent p-0 h-auto min-w-full">
+                                <TabsTrigger
+                                    value="editor"
+                                    className="flex-shrink-0 rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-5 py-3.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors whitespace-nowrap"
+                                >
+                                    📝 Editor
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="ingredients"
+                                    className="flex-shrink-0 rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-5 py-3.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors whitespace-nowrap"
+                                >
+                                    🥘 Ingredients
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="steps"
+                                    className="flex-shrink-0 rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-5 py-3.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors whitespace-nowrap"
+                                >
+                                    📋 Steps
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="resources"
+                                    className="flex-shrink-0 rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-5 py-3.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors whitespace-nowrap"
+                                >
+                                    🖼️ Resources
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="console"
+                                    className="flex-shrink-0 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-5 py-3.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors whitespace-nowrap"
+                                >
+                                    💻 Console
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
                         <TabsContent value="editor" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <RecipeEditor/>
                         </TabsContent>

@@ -18,21 +18,38 @@ interface RecipeContextType extends RecipeState {
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 
-const DEFAULT_RECIPE = `// Simple Pancakes Recipe
+const DEFAULT_RECIPE = `// 🥞 Classic Pancakes
 let servings = 4;
 
+// Visual references
+image("Finished Pancakes", "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800", "Golden fluffy pancakes stacked");
+image("Batter Consistency", "https://images.unsplash.com/photo-1589627461407-6257b1acf0fd?w=800", "Proper batter texture");
+
+// Dry ingredients
 add("flour", 200 * servings, "grams");
+add("sugar", 20 * servings, "grams");
+add("salt", 2 * servings, "grams");
+
+// Wet ingredients
 add("milk", 300 * servings, "ml");
 add("egg", 2 * servings);
-add("sugar", 20, "grams");
-add("butter", 30, "grams");
+add("butter", 30 * servings, "grams");
 
-mix("until smooth");
+// Preparation
+mix("dry ingredients in a bowl");
+mix("wet ingredients separately");
+pour("wet into dry mixture");
+mix("until just combined");
+
+// Resting improves texture
 rest(5, "minutes");
+
+// Cooking
 cook(3, "minutes");
 flip();
 cook(2, "minutes");
-serve("warm with syrup");`;
+
+serve("warm with maple syrup and butter");`;
 
 export function RecipeProvider({children}: { children: ReactNode }) {
     const [state, setState] = useState<RecipeState>({
