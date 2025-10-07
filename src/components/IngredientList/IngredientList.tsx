@@ -15,7 +15,7 @@ export function IngredientList() {
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden w-full" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
         {/* Variables Section */}
         {variableArray.length > 0 && (
           <div className="border-b border-[var(--color-ide-border)]">
@@ -30,12 +30,12 @@ export function IngredientList() {
                   <span className="text-sm font-mono text-[var(--color-variable)] font-semibold">
                     {variable.name}
                   </span>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 w-full min-w-0">
                     <input
                       type="number"
                       value={variable.value}
                       onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value) || 0)}
-                      className="w-16 px-2 py-1 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-number)] font-mono text-sm focus:outline-none focus:border-[var(--color-accent)]"
+                      className="w-14 flex-shrink-0 px-2 py-1 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-number)] font-mono text-sm focus:outline-none focus:border-[var(--color-accent)]"
                     />
                     <input
                       type="range"
@@ -43,7 +43,7 @@ export function IngredientList() {
                       max="20"
                       value={variable.value}
                       onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value))}
-                      className="flex-1 accent-[var(--color-accent)] h-1.5"
+                      className="flex-1 min-w-0 accent-[var(--color-accent)] h-1.5"
                     />
                   </div>
                 </div>

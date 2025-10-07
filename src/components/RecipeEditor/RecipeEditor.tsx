@@ -65,6 +65,7 @@ export function RecipeEditor() {
               '.cm-content': {
                 fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
                 padding: '16px 0',
+                paddingBottom: '120px', // Extra space at bottom for mobile accessibility
               },
               '.cm-gutters': {
                 backgroundColor: 'var(--color-ide-bg-lighter)',
