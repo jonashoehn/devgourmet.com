@@ -527,8 +527,7 @@ export class Interpreter {
         const description = String(args[0]);
 
         this.steps.push({
-            id: `step-${this.steps.length + 1}`,
-            action: 'step',
+            type: 'other',
             description,
             line,
             isTimerStep: false,

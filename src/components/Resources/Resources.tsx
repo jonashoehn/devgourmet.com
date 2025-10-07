@@ -205,7 +205,13 @@ export function Resources() {
 
               {/* Content based on type */}
               {selectedImage.type === 'video' ? (
-                <div className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center"
+                  onClick={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                >
                   <div className="text-6xl mb-4">▶️</div>
                   <h3 className="text-xl font-semibold text-[var(--color-ide-text)] mb-4">{selectedImage.name}</h3>
                   {selectedImage.description && (
@@ -215,14 +221,19 @@ export function Resources() {
                     href={selectedImage.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors"
-                    onClick={(e) => e.stopPropagation()}
+                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors touch-manipulation"
                   >
                     Watch Video →
                   </a>
                 </div>
               ) : selectedImage.type === 'link' ? (
-                <div className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center"
+                  onClick={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                >
                   <div className="text-6xl mb-4">🔗</div>
                   <h3 className="text-xl font-semibold text-[var(--color-ide-text)] mb-4">{selectedImage.name}</h3>
                   {selectedImage.description && (
@@ -232,8 +243,7 @@ export function Resources() {
                     href={selectedImage.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors"
-                    onClick={(e) => e.stopPropagation()}
+                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors touch-manipulation"
                   >
                     Open Link →
                   </a>
