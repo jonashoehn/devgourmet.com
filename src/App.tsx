@@ -103,16 +103,16 @@ function AppContent() {
                                 💻 Console
                             </TabsTrigger>
                         </TabsList>
-                        <TabsContent value="editor" className="flex-1 overflow-auto m-0 border-0">
+                        <TabsContent value="editor" className="flex-1 m-0 border-0 overflow-hidden">
                             <RecipeEditor/>
                         </TabsContent>
-                        <TabsContent value="ingredients" className="flex-1 overflow-auto m-0 border-0">
+                        <TabsContent value="ingredients" className="flex-1 m-0 border-0 overflow-hidden">
                             <IngredientList/>
                         </TabsContent>
-                        <TabsContent value="steps" className="flex-1 overflow-auto m-0 border-0">
+                        <TabsContent value="steps" className="flex-1 m-0 border-0 overflow-hidden">
                             <StepExecutor/>
                         </TabsContent>
-                        <TabsContent value="console" className="flex-1 overflow-auto m-0 border-0">
+                        <TabsContent value="console" className="flex-1 m-0 border-0 overflow-hidden">
                             <Console/>
                         </TabsContent>
                     </Tabs>

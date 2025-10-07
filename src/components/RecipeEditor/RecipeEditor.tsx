@@ -1,21 +1,15 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { useRecipe } from '../../context';
+import CodeMirror from '@uiw/react-codemirror';
+import { devscript } from '../../lib/devscript-language';
+import { EditorView } from '@codemirror/view';
 
 export function RecipeEditor() {
   const { code, updateCode, errors } = useRecipe();
-  const [localCode, setLocalCode] = useState(code);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync local code with context when it changes externally
-  useEffect(() => {
-    setLocalCode(code);
-  }, [code]);
-
   // Handle code change with debounce
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newCode = e.target.value;
-    setLocalCode(newCode);
-
+  const handleChange = useCallback((value: string) => {
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -23,26 +17,18 @@ export function RecipeEditor() {
 
     // Debounce the update to avoid too many re-parses
     timeoutRef.current = setTimeout(() => {
-      updateCode(newCode);
+      updateCode(value);
     }, 500);
   }, [updateCode]);
 
-  // Handle Tab key for indentation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const target = e.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      const newCode = localCode.substring(0, start) + '  ' + localCode.substring(end);
-      setLocalCode(newCode);
-
-      // Set cursor position after the inserted spaces
-      setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + 2;
-      }, 0);
-    }
-  }, [localCode]);
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-ide-bg-light)]">
@@ -63,15 +49,75 @@ export function RecipeEditor() {
         </div>
       </div>
 
-      {/* Simple code editor */}
-      <textarea
-        value={localCode}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        className="flex-1 p-4 bg-[var(--color-ide-bg)] text-[var(--color-ide-text)] font-mono text-sm resize-none outline-none border-none"
-        spellCheck={false}
-        placeholder="Write your recipe here..."
-      />
+      {/* CodeMirror Editor */}
+      <div className="flex-1 overflow-auto">
+        <CodeMirror
+          value={code}
+          onChange={handleChange}
+          extensions={[
+            devscript,
+            EditorView.lineWrapping,
+            EditorView.theme({
+              '&': {
+                fontSize: '14px',
+                height: '100%',
+              },
+              '.cm-content': {
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                padding: '16px 0',
+              },
+              '.cm-gutters': {
+                backgroundColor: 'var(--color-ide-bg-lighter)',
+                color: 'var(--color-ide-text-muted)',
+                border: 'none',
+                paddingRight: '8px',
+              },
+              '.cm-activeLineGutter': {
+                backgroundColor: 'var(--color-ide-bg)',
+              },
+              '.cm-line': {
+                padding: '0 16px',
+              },
+              '.cm-activeLine': {
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              },
+              '.cm-selectionBackground, ::selection': {
+                backgroundColor: 'rgba(0, 122, 204, 0.3) !important',
+              },
+              '&.cm-focused .cm-selectionBackground, &.cm-focused ::selection': {
+                backgroundColor: 'rgba(0, 122, 204, 0.3) !important',
+              },
+              '.cm-cursor': {
+                borderLeftColor: 'var(--color-ide-text)',
+              },
+            }),
+          ]}
+          theme="dark"
+          basicSetup={{
+            lineNumbers: true,
+            highlightActiveLineGutter: true,
+            highlightActiveLine: true,
+            foldGutter: true,
+            dropCursor: true,
+            allowMultipleSelections: true,
+            indentOnInput: true,
+            bracketMatching: true,
+            closeBrackets: true,
+            autocompletion: false,
+            rectangularSelection: true,
+            crosshairCursor: true,
+            highlightSelectionMatches: true,
+            closeBracketsKeymap: true,
+            searchKeymap: true,
+            foldKeymap: true,
+            completionKeymap: true,
+            lintKeymap: true,
+          }}
+          style={{
+            height: '100%',
+          }}
+        />
+      </div>
 
       {/* Error display */}
       {errors.length > 0 && (

@@ -7,43 +7,45 @@ export function IngredientList() {
   const variableArray = Array.from(variables.values());
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-ide-bg-light)]">
+    <div className="flex flex-col h-full bg-[var(--color-ide-bg)]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[var(--color-ide-border)]">
-        <h2 className="text-lg font-semibold text-[var(--color-ide-text)]">
-          Ingredients & Variables
+      <div className="flex-shrink-0 px-4 py-2.5 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
+        <h2 className="text-sm font-semibold text-[var(--color-ide-text)] font-mono">
+          INGREDIENTS & VARIABLES
         </h2>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
         {/* Variables Section */}
         {variableArray.length > 0 && (
-          <div className="p-4 border-b border-[var(--color-ide-border)]">
-            <h3 className="text-sm font-mono text-[var(--color-keyword)] mb-3">
-              Variables
-            </h3>
-            <div className="space-y-3">
+          <div className="border-b border-[var(--color-ide-border)]">
+            <div className="px-4 py-2 bg-[var(--color-ide-bg-lighter)]">
+              <h3 className="text-xs font-mono text-[var(--color-keyword)] uppercase tracking-wide">
+                Variables
+              </h3>
+            </div>
+            <div className="px-4 py-3 space-y-3">
               {variableArray.map((variable) => (
-                <div key={variable.name} className="flex items-center gap-3">
-                  <span className="text-sm font-mono text-[var(--color-variable)] w-24">
+                <div key={variable.name} className="flex flex-col gap-2 py-2 border-b border-[var(--color-ide-border)] last:border-0">
+                  <span className="text-sm font-mono text-[var(--color-variable)] font-semibold">
                     {variable.name}
                   </span>
-                  <input
-                    type="number"
-                    value={variable.value}
-                    onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value) || 0)}
-                    className="flex-1 px-3 py-1.5 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] rounded text-[var(--color-number)] font-mono text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors"
-                    style={{scrollMarginTop: '0px'}}
-                  />
-                  <input
-                    type="range"
-                    min="1"
-                    max="20"
-                    value={variable.value}
-                    onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value))}
-                    className="flex-1 accent-[var(--color-accent)]"
-                    style={{scrollMarginTop: '0px'}}
-                  />
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      value={variable.value}
+                      onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value) || 0)}
+                      className="w-16 px-2 py-1 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-number)] font-mono text-sm focus:outline-none focus:border-[var(--color-accent)]"
+                    />
+                    <input
+                      type="range"
+                      min="1"
+                      max="20"
+                      value={variable.value}
+                      onChange={(e) => updateVariable(variable.name, parseFloat(e.target.value))}
+                      className="flex-1 accent-[var(--color-accent)] h-1.5"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -52,24 +54,26 @@ export function IngredientList() {
 
         {/* Ingredients Section */}
         {ingredients.length > 0 && (
-          <div className="p-4">
-            <h3 className="text-sm font-mono text-[var(--color-keyword)] mb-3">
-              Ingredients ({ingredients.length})
-            </h3>
-            <div className="space-y-2">
+          <div>
+            <div className="px-4 py-2 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
+              <h3 className="text-xs font-mono text-[var(--color-keyword)] uppercase tracking-wide">
+                Ingredients ({ingredients.length})
+              </h3>
+            </div>
+            <div className="divide-y divide-[var(--color-ide-border)]">
               {ingredients.map((ingredient, idx) => (
                 <div
                   key={`${ingredient.name}-${idx}`}
-                  className="flex items-center gap-3 p-2 rounded hover:bg-[var(--color-ide-bg)] transition-colors group"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-ide-bg-lighter)] transition-colors cursor-default"
                 >
-                  <span className="text-2xl">{ingredient.emoji}</span>
-                  <div className="flex-1">
+                  <span className="text-2xl flex-shrink-0">{ingredient.emoji}</span>
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
                       <span className="font-mono text-[var(--color-number)] font-semibold">
                         {ingredient.amount}
                       </span>
                       {ingredient.unit && (
-                        <span className="text-xs text-[var(--color-ide-text-muted)] font-mono">
+                        <span className="text-xs text-[var(--color-warning)] font-mono">
                           {ingredient.unit}
                         </span>
                       )}
@@ -78,8 +82,8 @@ export function IngredientList() {
                       </span>
                     </div>
                   </div>
-                  <span className="text-xs text-[var(--color-ide-text-muted)] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
-                    line {ingredient.line}
+                  <span className="text-[10px] text-[var(--color-ide-text-muted)] font-mono">
+                    :{ingredient.line}
                   </span>
                 </div>
               ))}
@@ -89,7 +93,7 @@ export function IngredientList() {
 
         {/* Empty State */}
         {ingredients.length === 0 && variableArray.length === 0 && (
-          <div className="flex items-center justify-center h-full p-8 text-center">
+          <div className="flex items-center justify-center h-full text-center">
             <div>
               <div className="text-4xl mb-3">🍽️</div>
               <p className="text-[var(--color-ide-text-muted)] text-sm">

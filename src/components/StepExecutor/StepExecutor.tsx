@@ -68,21 +68,27 @@ export function StepExecutor() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-ide-bg-light)]">
+    <div className="flex flex-col h-full bg-[var(--color-ide-bg)]">
       {/* Header */}
-      <div className="flex-shrink-0 px-4 py-3 border-b border-[var(--color-ide-border)]">
+      <div className="flex-shrink-0 px-4 py-2.5 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[var(--color-ide-text)]">
-            Recipe Steps
+          <h2 className="text-sm font-semibold text-[var(--color-ide-text)] font-mono">
+            RECIPE STEPS
           </h2>
-          <div className="text-sm text-[var(--color-ide-text-muted)]">
-            {currentStepIndex >= 0 ? `${currentStepIndex + 1} / ${steps.length}` : `${steps.length} steps`}
+          <div className="text-xs text-[var(--color-ide-text-muted)] font-mono">
+            {currentStepIndex >= 0 ? `${currentStepIndex + 1}/${steps.length}` : `${steps.length}`}
           </div>
         </div>
       </div>
 
-      {/* Steps List */}
-      <div className="flex-1 overflow-y-auto p-4 min-h-0 max-h-full">
+      {/* Steps List - with touch scroll support */}
+      <div
+        className="flex-1 overflow-y-auto overflow-x-hidden min-h-0"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain'
+        }}
+      >
         {steps.length === 0 ? (
           <div className="flex items-center justify-center h-full text-center">
             <div>
@@ -95,7 +101,7 @@ export function StepExecutor() {
             </div>
           </div>
         ) : (
-          <div className="space-y-0 border border-[var(--color-ide-border)] divide-y divide-[var(--color-ide-border)]">
+          <div className="divide-y divide-[var(--color-ide-border)]">
             {steps.map((step, index) => {
               const isActive = index === currentStepIndex;
               const isCompleted = currentStepIndex > index;
@@ -104,23 +110,22 @@ export function StepExecutor() {
                 <div
                   key={`${step.line}-${index}`}
                   className={`
-                    py-3 pr-3 transition-all cursor-pointer relative
+                    flex items-start gap-3 px-4 py-3 transition-all cursor-pointer
                     ${
                       isActive
                         ? 'bg-[#1a3a52] border-l-4 border-l-[var(--color-accent)]'
                         : isCompleted
-                        ? 'bg-[#1e2a1e] border-l-4 border-l-[var(--color-success)]'
-                        : 'bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)]'
+                        ? 'bg-[#1a2a1a] border-l-4 border-l-[var(--color-success)]'
+                        : 'bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)] border-l-4 border-l-transparent'
                     }
                   `}
                   onClick={() => setCurrentStep(index)}
                 >
-                  <div className="flex items-center gap-3">
-                    {/* Step number & icon */}
-                    <div className="flex-shrink-0 ml-2">
-                      <div
-                        className={`
-                        w-8 h-8 rounded flex items-center justify-center text-sm font-mono font-bold leading-none
+                  {/* Step number badge */}
+                  <div className="flex-shrink-0 mt-0.5">
+                    <div
+                      className={`
+                        w-7 h-7 flex items-center justify-center text-xs font-mono font-bold
                         ${
                           isActive
                             ? 'bg-[var(--color-accent)] text-white'
@@ -129,31 +134,36 @@ export function StepExecutor() {
                             : 'bg-[var(--color-ide-bg-lighter)] text-[var(--color-ide-text-muted)] border border-[var(--color-ide-border)]'
                         }
                       `}
-                      >
-                        {isCompleted ? '✓' : index + 1}
-                      </div>
+                    >
+                      {isCompleted ? '✓' : index + 1}
+                    </div>
+                  </div>
+
+                  {/* Step content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base">{getStepIcon(step.type)}</span>
+                      <span className={`text-sm font-medium ${
+                        isActive
+                          ? 'text-white'
+                          : isCompleted
+                          ? 'text-[var(--color-ide-text-muted)] line-through'
+                          : 'text-[var(--color-ide-text)]'
+                      }`}>
+                        {step.description}
+                      </span>
                     </div>
 
-                    {/* Step content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-lg">{getStepIcon(step.type)}</span>
-                        <span className={`text-sm font-medium ${isActive ? 'text-[var(--color-ide-text)]' : isCompleted ? 'text-[var(--color-ide-text-muted)]' : 'text-[var(--color-ide-text)]'}`}>
-                          {step.description}
-                        </span>
+                    {/* Timer for timer steps */}
+                    {step.isTimerStep && step.duration && (
+                      <div className="mt-2 mb-1">
+                        <Timer line={step.line} />
                       </div>
+                    )}
 
-                      {/* Timer for timer steps */}
-                      {step.isTimerStep && step.duration && (
-                        <div className="mt-2">
-                          <Timer line={step.line} />
-                        </div>
-                      )}
-
-                      {/* Line number */}
-                      <div className="text-xs text-[var(--color-ide-text-muted)] mt-1 font-mono">
-                        line {step.line}
-                      </div>
+                    {/* Line number */}
+                    <div className="text-[10px] text-[var(--color-ide-text-muted)] font-mono mt-1">
+                      :{step.line}
                     </div>
                   </div>
                 </div>

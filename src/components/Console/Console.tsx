@@ -51,29 +51,31 @@ export function Console() {
       </div>
 
       {/* Console Messages */}
-      <div className="flex-1 overflow-auto p-2 font-mono text-xs" style={{overflow: 'auto'}}>
+      <div className="flex-1 overflow-auto p-3 font-mono text-xs" style={{ WebkitOverflowScrolling: 'touch' }}>
         {consoleMessages.length === 0 && (
           <div className="flex items-center justify-center h-full text-[var(--color-ide-text-muted)]">
             <div className="text-center">
-              <div className="text-2xl mb-2">💬</div>
-              <p>Console output will appear here</p>
+              <div className="text-3xl mb-3">💬</div>
+              <p className="text-sm">Console output will appear here</p>
             </div>
           </div>
         )}
-        {consoleMessages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`mb-1 leading-5 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-2 py-1 rounded transition-colors`}
-          >
-            <span className="mr-2">{getMessagePrefix(msg.type)}</span>
-            <span>{msg.message}</span>
-            {msg.line !== undefined && (
-              <span className="ml-2 text-[var(--color-ide-text-muted)] text-[10px]">
-                (line {msg.line})
-              </span>
-            )}
-          </div>
-        ))}
+        <div className="space-y-1">
+          {consoleMessages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`leading-6 ${getMessageColor(msg.type)} hover:bg-[var(--color-ide-bg)] px-3 py-2 rounded-md border border-transparent hover:border-[var(--color-ide-border)] transition-all`}
+            >
+              <span className="mr-2 text-base">{getMessagePrefix(msg.type)}</span>
+              <span className="text-sm">{msg.message}</span>
+              {msg.line !== undefined && (
+                <span className="ml-2 text-[var(--color-ide-text-muted)] text-[11px] opacity-60">
+                  (line {msg.line})
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

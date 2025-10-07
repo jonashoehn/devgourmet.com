@@ -95,6 +95,53 @@ code, pre {
   background-color: rgba(0, 122, 204, 0.3);
 }
 
+/* CodeMirror custom syntax highlighting */
+.cm-keyword {
+  color: var(--color-keyword) !important;
+  font-weight: 600;
+}
+
+.cm-function {
+  color: var(--color-function) !important;
+  font-weight: 500;
+}
+
+.cm-string {
+  color: var(--color-string) !important;
+}
+
+.cm-number {
+  color: var(--color-number) !important;
+}
+
+.cm-comment {
+  color: var(--color-comment) !important;
+  font-style: italic;
+}
+
+.cm-operator {
+  color: var(--color-operator) !important;
+}
+
+.cm-punctuation {
+  color: var(--color-ide-text) !important;
+}
+
+.cm-variable {
+  color: var(--color-variable) !important;
+}
+
+.cm-unit {
+  color: var(--color-warning) !important;
+  font-style: italic;
+}
+
+/* CodeMirror editor background */
+.cm-editor {
+  background-color: var(--color-ide-bg) !important;
+  color: var(--color-ide-text) !important;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
