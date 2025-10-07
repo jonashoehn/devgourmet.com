@@ -6,6 +6,7 @@ import {StepExecutor} from './components/StepExecutor';
 import {Console} from './components/Console';
 import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 
 function AppContent() {
     const [currentRecipe, setCurrentRecipe] = useState('pancakes');
@@ -37,46 +38,45 @@ function AppContent() {
         <div className="h-screen flex flex-col bg-[var(--color-ide-bg)] text-[var(--color-ide-text)]">
             {/* Top Bar */}
             <header
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between pr-4 py-3  bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
-                <div className="flex items-center gap-2">
-                    <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-10 h-10" style={{marginLeft: '12px'}}/>
-                    <h1 className="text-xl font-bold">
+                className="flex items-center justify-between px-4 py-3 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
+                <div className="flex items-center gap-3">
+                    <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-8 h-8" />
+                    <h1 className="text-lg font-bold">
                         <span className="text-[var(--color-keyword)]">Dev</span>
                         <span className="text-[var(--color-function)]">Gourmet</span>
                     </h1>
-                    <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden sm:inline">
-            v0.0.1
-          </span>
+                    <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden md:inline">
+                        v0.0.1
+                    </span>
                 </div>
 
-                {/* Recipe Selector */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm text-[var(--color-ide-text-muted)] hidden md:inline">Demo:</span>
-                    {demoRecipes.map((recipe) => (
-                        <button
-                            key={recipe.id}
-                            onClick={() => loadRecipe(recipe.id)}
-                            className={`
-                px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs sm:text-sm font-mono transition-colors whitespace-nowrap
-                ${
-                                currentRecipe === recipe.id
-                                    ? 'bg-[var(--color-accent)] text-white'
-                                    : 'bg-[var(--color-ide-bg)] text-[var(--color-ide-text)] hover:bg-[var(--color-ide-border)]'
-                            }
-              `}
-                            title={recipe.description}
-                        >
-                            {recipe.title}
-                        </button>
-                    ))}
+                {/* Recipe Selector Dropdown */}
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden sm:inline">Recipe:</span>
+                    <Select value={currentRecipe} onValueChange={loadRecipe}>
+                        <SelectTrigger className="w-[180px] sm:w-[200px] h-8 rounded-none bg-[var(--color-ide-bg)] border-[var(--color-ide-border)] text-[var(--color-ide-text)] font-mono text-xs focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-[var(--color-accent)]">
+                            <SelectValue placeholder="Select recipe" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-none bg-[var(--color-ide-bg-lighter)] border-[var(--color-ide-border)]">
+                            {demoRecipes.map((recipe) => (
+                                <SelectItem
+                                    key={recipe.id}
+                                    value={recipe.id}
+                                    className="rounded-none text-[var(--color-ide-text)] font-mono text-xs focus:bg-[var(--color-accent)] focus:text-white cursor-pointer"
+                                >
+                                    {recipe.title}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
                 {/* Mobile/Tablet View - Tabs */}
-                <div className="flex-1 flex flex-col lg:hidden">
-                    <Tabs defaultValue="editor" className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col lg:hidden min-h-0">
+                    <Tabs defaultValue="editor" className="flex-1 flex flex-col min-h-0 overflow-hidden">
                         <TabsList className="w-full justify-start rounded-none border-b border-[var(--color-ide-border)] bg-[var(--color-ide-bg-lighter)] p-0 h-auto">
                             <TabsTrigger
                                 value="editor"
@@ -103,16 +103,16 @@ function AppContent() {
                                 💻 Console
                             </TabsTrigger>
                         </TabsList>
-                        <TabsContent value="editor" className="flex-1 m-0 border-0 overflow-hidden">
+                        <TabsContent value="editor" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <RecipeEditor/>
                         </TabsContent>
-                        <TabsContent value="ingredients" className="flex-1 m-0 border-0 overflow-hidden">
+                        <TabsContent value="ingredients" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <IngredientList/>
                         </TabsContent>
-                        <TabsContent value="steps" className="flex-1 m-0 border-0 overflow-hidden">
+                        <TabsContent value="steps" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <StepExecutor/>
                         </TabsContent>
-                        <TabsContent value="console" className="flex-1 m-0 border-0 overflow-hidden">
+                        <TabsContent value="console" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <Console/>
                         </TabsContent>
                     </Tabs>
