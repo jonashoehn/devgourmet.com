@@ -40,6 +40,7 @@ export function RecipeProvider({children}: { children: ReactNode }) {
         variables: new Map(),
         ingredients: [],
         steps: [],
+        resources: [],
         consoleMessages: [],
         errors: [],
         currentStepIndex: -1,
@@ -85,6 +86,7 @@ export function RecipeProvider({children}: { children: ReactNode }) {
                     variables: vars,
                     ingredients: newResult.ingredients,
                     steps: newResult.steps,
+                    resources: newResult.resources,
                     consoleMessages: newResult.consoleMessages, // Replace instead of append
                     errors: newResult.errors,
                 }));
@@ -95,6 +97,7 @@ export function RecipeProvider({children}: { children: ReactNode }) {
                     variables: result.variables,
                     ingredients: result.ingredients,
                     steps: result.steps,
+                    resources: result.resources,
                     consoleMessages: result.consoleMessages, // Replace instead of append
                     errors: result.errors,
                 }));

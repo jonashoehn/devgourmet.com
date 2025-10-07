@@ -16,6 +16,16 @@ export interface Ingredient {
   emoji?: string;
 }
 
+export interface RecipeResource {
+  id: string;
+  type: 'image' | 'video' | 'link';
+  name: string;
+  url: string;
+  description?: string;
+  line: number;
+  thumbnail?: string; // For future use with API
+}
+
 export interface RecipeStep {
   type: 'add' | 'mix' | 'cook' | 'rest' | 'bake' | 'serve' | 'flip' | 'simmer' | 'other';
   description: string;
@@ -45,6 +55,7 @@ export interface RecipeState {
   variables: Map<string, Variable>;
   ingredients: Ingredient[];
   steps: RecipeStep[];
+  resources: RecipeResource[];
   consoleMessages: ConsoleMessage[];
   errors: ParseError[];
   currentStepIndex: number;
@@ -87,5 +98,5 @@ export interface FunctionDefinition {
   minArgs: number;
   maxArgs: number;
   handler: FunctionHandler;
-  category: 'ingredient' | 'action' | 'timer' | 'output';
+  category: 'ingredient' | 'action' | 'timer' | 'output' | 'resource';
 }

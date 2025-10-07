@@ -4,6 +4,7 @@ import {RecipeEditor} from './components/RecipeEditor';
 import {IngredientList} from './components/IngredientList';
 import {StepExecutor} from './components/StepExecutor';
 import {Console} from './components/Console';
+import {Resources} from './components/Resources';
 import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
@@ -97,6 +98,12 @@ function AppContent() {
                                 📋 Steps
                             </TabsTrigger>
                             <TabsTrigger
+                                value="resources"
+                                className="rounded-none border-r border-[var(--color-ide-border)] text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
+                            >
+                                🖼️ Resources
+                            </TabsTrigger>
+                            <TabsTrigger
                                 value="console"
                                 className="rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] px-4 py-2.5 font-mono text-sm hover:text-[var(--color-ide-text)] transition-colors"
                             >
@@ -111,6 +118,9 @@ function AppContent() {
                         </TabsContent>
                         <TabsContent value="steps" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <StepExecutor/>
+                        </TabsContent>
+                        <TabsContent value="resources" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
+                            <Resources/>
                         </TabsContent>
                         <TabsContent value="console" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
                             <Console/>
@@ -128,17 +138,22 @@ function AppContent() {
                     {/* Right Panel - Output */}
                     <div className="w-1/2 flex flex-col">
                         {/* Top Right - Ingredients & Variables */}
-                        <div className="h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
+                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
                             <IngredientList/>
                         </div>
 
-                        {/* Middle Right - Steps */}
-                        <div className="h-1/3 border-b border-[var(--color-ide-border)] overflow-auto">
+                        {/* Steps */}
+                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
                             <StepExecutor/>
                         </div>
 
-                        {/* Bottom Right - Console */}
-                        <div className="h-1/3 overflow-auto">
+                        {/* Resources */}
+                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
+                            <Resources/>
+                        </div>
+
+                        {/* Bottom - Console */}
+                        <div className="h-1/4 overflow-auto">
                             <Console/>
                         </div>
                     </div>

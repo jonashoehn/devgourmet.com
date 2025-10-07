@@ -1,6 +1,10 @@
 export const pancakesRecipe = `// 🥞 Classic Pancakes
 let servings = 4;
 
+// Visual references
+image("Finished Pancakes", "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800", "Golden fluffy pancakes stacked");
+image("Batter Consistency", "https://images.unsplash.com/photo-1589627461407-6257b1acf0fd?w=800", "Proper batter texture");
+
 // Dry ingredients
 add("flour", 200 * servings, "grams");
 add("sugar", 20 * servings, "grams");

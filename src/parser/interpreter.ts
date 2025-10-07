@@ -6,7 +6,7 @@ import {
     type FunctionCall,
     type Identifier, type Ingredient,
     type Literal, type ParseError,
-    type Program, type RecipeStep, type Variable,
+    type Program, type RecipeResource, type RecipeStep, type Variable,
     type VariableDeclaration
 } from "../types";
 
@@ -61,6 +61,7 @@ export class Interpreter {
     private variables: Map<string, Variable> = new Map();
     private ingredients: Ingredient[] = [];
     private steps: RecipeStep[] = [];
+    private resources: RecipeResource[] = [];
     private consoleMessages: ConsoleMessage[] = [];
     private errors: ParseError[] = [];
     private messageId: number = 0;
@@ -72,6 +73,7 @@ export class Interpreter {
         variables: Map<string, Variable>;
         ingredients: Ingredient[];
         steps: RecipeStep[];
+        resources: RecipeResource[];
         consoleMessages: ConsoleMessage[];
         errors: ParseError[];
     } {
@@ -89,6 +91,7 @@ export class Interpreter {
             variables: this.variables,
             ingredients: this.ingredients,
             steps: this.steps,
+            resources: this.resources,
             consoleMessages: this.consoleMessages,
             errors: this.errors,
         };
@@ -101,6 +104,7 @@ export class Interpreter {
         this.variables.clear();
         this.ingredients = [];
         this.steps = [];
+        this.resources = [];
         this.consoleMessages = [];
         this.errors = [];
         this.messageId = 0;
@@ -200,6 +204,10 @@ export class Interpreter {
                     break;
                 case 'season':
                     this.handleSeason(args, node.line);
+                    break;
+                case 'resource':
+                case 'image':
+                    this.handleResource(args, node.line);
                     break;
                 default:
                     this.handleGenericAction(node.name, args, node.line);
@@ -453,6 +461,36 @@ export class Interpreter {
         });
 
         this.addConsoleMessage('info', `Seasoning ${description}...`, line);
+    }
+
+    /**
+     * Handle resource() / image() function
+     * Syntax: resource("name", "url", "description")
+     * or: image("name", "url", "description")
+     */
+    private handleResource(args: (string | number)[], line: number): void {
+        if (args.length < 2) {
+            this.addError('resource() requires at least 2 arguments: name and URL', line);
+            return;
+        }
+
+        const name = String(args[0]);
+        const url = String(args[1]);
+        const description = args.length > 2 ? String(args[2]) : undefined;
+
+        // Generate unique ID based on line and name
+        const id = `resource-${line}-${name.toLowerCase().replace(/\s+/g, '-')}`;
+
+        this.resources.push({
+            id,
+            type: 'image',
+            name,
+            url,
+            description,
+            line,
+        });
+
+        this.addConsoleMessage('info', `Added resource: ${name}`, line);
     }
 
     /**
