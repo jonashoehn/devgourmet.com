@@ -99,19 +99,40 @@ export function Resources() {
                   onClick={() => setSelectedIndex(index)}
                   style={{ aspectRatio: '1', position: 'relative', overflow: 'hidden' }}
                 >
-                  {/* Background image */}
-                  <img
-                    src={resource.url}
-                    alt={resource.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ display: 'block' }}
-                  />
+                  {/* Thumbnail based on type */}
+                  {resource.type === 'image' ? (
+                    <img
+                      src={resource.url}
+                      alt={resource.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      style={{ display: 'block' }}
+                    />
+                  ) : resource.type === 'video' ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-ide-bg)]">
+                      <div className="text-center">
+                        <div className="text-5xl mb-2">▶️</div>
+                        <div className="text-xs text-[var(--color-ide-text-muted)] font-mono px-2">Video</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-ide-bg)]">
+                      <div className="text-center">
+                        <div className="text-5xl mb-2">🔗</div>
+                        <div className="text-xs text-[var(--color-ide-text-muted)] font-mono px-2">Link</div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Hover overlay */}
                   <div className="absolute inset-0 group-hover:bg-black group-hover:bg-opacity-60 transition-all flex items-center justify-center pointer-events-none">
                     <div className="text-white opacity-0 group-hover:opacity-100 text-center px-2 pointer-events-auto">
                       <div className="text-xs font-mono truncate">{resource.name}</div>
                     </div>
+                  </div>
+
+                  {/* Type badge */}
+                  <div className="absolute top-1 left-1 bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--color-ide-text-muted)] z-10 uppercase">
+                    {resource.type}
                   </div>
 
                   {/* Line number badge */}
@@ -182,44 +203,82 @@ export function Resources() {
                 </div>
               )}
 
-              {/* Loading placeholder */}
-              {!imageLoaded[selectedImage.id] && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="text-6xl">🖼️</div>
+              {/* Content based on type */}
+              {selectedImage.type === 'video' ? (
+                <div className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center" onClick={(e) => e.stopPropagation()}>
+                  <div className="text-6xl mb-4">▶️</div>
+                  <h3 className="text-xl font-semibold text-[var(--color-ide-text)] mb-4">{selectedImage.name}</h3>
+                  {selectedImage.description && (
+                    <p className="text-sm text-[var(--color-ide-text-muted)] mb-6">{selectedImage.description}</p>
+                  )}
+                  <a
+                    href={selectedImage.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Watch Video →
+                  </a>
                 </div>
+              ) : selectedImage.type === 'link' ? (
+                <div className="w-full max-w-2xl bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-8 text-center" onClick={(e) => e.stopPropagation()}>
+                  <div className="text-6xl mb-4">🔗</div>
+                  <h3 className="text-xl font-semibold text-[var(--color-ide-text)] mb-4">{selectedImage.name}</h3>
+                  {selectedImage.description && (
+                    <p className="text-sm text-[var(--color-ide-text-muted)] mb-6">{selectedImage.description}</p>
+                  )}
+                  <a
+                    href={selectedImage.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-mono text-sm transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Open Link →
+                  </a>
+                </div>
+              ) : (
+                <>
+                  {!imageLoaded[selectedImage.id] && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="text-6xl">🖼️</div>
+                    </div>
+                  )}
+                  <img
+                    src={selectedImage.url}
+                    alt={selectedImage.name}
+                    className="max-w-full max-h-[70vh] object-contain relative z-0"
+                    onClick={(e) => e.stopPropagation()}
+                    onLoad={() => setImageLoaded(prev => ({ ...prev, [selectedImage.id]: true }))}
+                  />
+                </>
               )}
 
-              {/* Image */}
-              <img
-                src={selectedImage.url}
-                alt={selectedImage.name}
-                className="max-w-full max-h-[70vh] object-contain relative z-0"
-                onClick={(e) => e.stopPropagation()}
-                onLoad={() => setImageLoaded(prev => ({ ...prev, [selectedImage.id]: true }))}
-              />
-
-              {/* Image Info */}
-              <div
-                className="mt-4 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-4 max-w-2xl w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-base font-semibold text-[var(--color-ide-text)]">
-                    {selectedImage.name}
-                  </h3>
-                  <span className="text-xs font-mono text-[var(--color-ide-text-muted)]">
-                    line :{selectedImage.line}
-                  </span>
+              {/* Info (only for images) */}
+              {selectedImage.type === 'image' && (
+                <div
+                  className="mt-4 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] p-4 max-w-2xl w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-base font-semibold text-[var(--color-ide-text)]">
+                      {selectedImage.name}
+                    </h3>
+                    <span className="text-xs font-mono text-[var(--color-ide-text-muted)]">
+                      line :{selectedImage.line}
+                    </span>
+                  </div>
+                  {selectedImage.description && (
+                    <p className="text-sm text-[var(--color-ide-text-muted)]">
+                      {selectedImage.description}
+                    </p>
+                  )}
+                  <div className="mt-2 text-xs font-mono text-[var(--color-ide-text-muted)] break-all">
+                    {selectedImage.url}
+                  </div>
                 </div>
-                {selectedImage.description && (
-                  <p className="text-sm text-[var(--color-ide-text-muted)]">
-                    {selectedImage.description}
-                  </p>
-                )}
-                <div className="mt-2 text-xs font-mono text-[var(--color-ide-text-muted)] break-all">
-                  {selectedImage.url}
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Next button - hidden on mobile */}

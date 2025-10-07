@@ -57,7 +57,7 @@ export const devscript = StreamLanguage.define<DevScriptState>({
     // Recipe actions (function calls)
     if (
       stream.match(
-        /^(add|mix|cook|bake|rest|serve|flip|heat|cool|stir|whisk|blend|chop|dice|slice|preheat|boil|simmer|fry|sauté|grill|roast|steam|knead|fold|season|resource|image|pour)\b/
+        /^(add|ingredient|mix|cook|bake|rest|serve|flip|heat|cool|stir|whisk|blend|chop|dice|slice|preheat|boil|simmer|fry|sauté|grill|roast|steam|knead|fold|season|resource|image|video|pour|step|help)\b/
       )
     ) {
       return 'function';

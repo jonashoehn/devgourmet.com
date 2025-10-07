@@ -207,7 +207,18 @@ export class Interpreter {
                     break;
                 case 'resource':
                 case 'image':
-                    this.handleResource(args, node.line);
+                case 'video':
+                    this.handleResource(args, node.line, node.name.toLowerCase());
+                    break;
+                case 'step':
+                    this.handleStep(args, node.line);
+                    break;
+                case 'help':
+                    this.handleHelp();
+                    break;
+                case 'ingredient':
+                    // Alias for add()
+                    this.handleAdd(args, node.line);
                     break;
                 default:
                     this.handleGenericAction(node.name, args, node.line);
@@ -464,13 +475,14 @@ export class Interpreter {
     }
 
     /**
-     * Handle resource() / image() function
+     * Handle resource() / image() / video() function
      * Syntax: resource("name", "url", "description")
      * or: image("name", "url", "description")
+     * or: video("name", "url", "description")
      */
-    private handleResource(args: (string | number)[], line: number): void {
+    private handleResource(args: (string | number)[], line: number, funcName: string = 'resource'): void {
         if (args.length < 2) {
-            this.addError('resource() requires at least 2 arguments: name and URL', line);
+            this.addError(`${funcName}() requires at least 2 arguments: name and URL`, line);
             return;
         }
 
@@ -478,19 +490,96 @@ export class Interpreter {
         const url = String(args[1]);
         const description = args.length > 2 ? String(args[2]) : undefined;
 
+        // Determine type from function name or URL
+        let type: 'image' | 'video' | 'link' = 'link';
+
+        if (funcName === 'video' || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
+            type = 'video';
+        } else if (funcName === 'image' || url.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i)) {
+            type = 'image';
+        }
+
         // Generate unique ID based on line and name
         const id = `resource-${line}-${name.toLowerCase().replace(/\s+/g, '-')}`;
 
         this.resources.push({
             id,
-            type: 'image',
+            type,
             name,
             url,
             description,
             line,
         });
 
-        this.addConsoleMessage('info', `Added resource: ${name}`, line);
+        this.addConsoleMessage('info', `Added ${type}: ${name}`, line);
+    }
+
+    /**
+     * Handle step() function for generic text steps
+     * Syntax: step("description")
+     */
+    private handleStep(args: (string | number)[], line: number): void {
+        if (args.length === 0) {
+            this.addError('step() requires at least 1 argument: description', line);
+            return;
+        }
+
+        const description = String(args[0]);
+
+        this.steps.push({
+            id: `step-${this.steps.length + 1}`,
+            action: 'step',
+            description,
+            line,
+            isTimerStep: false,
+        });
+
+        this.addConsoleMessage('info', `Step: ${description}`, line);
+    }
+
+    /**
+     * Handle help() function - shows syntax guide in console
+     */
+    private handleHelp(): void {
+        const helpText = `
+╔═══════════════════════════════════════════════════╗
+║        DevGourmet Syntax Guide (v0.1.0)          ║
+╚═══════════════════════════════════════════════════╝
+
+📌 VARIABLES
+  let servings = 4;
+  let temp = 180;
+
+🥘 INGREDIENTS
+  add("flour", 200, "grams");
+  add("milk", 300 * servings, "ml");
+  ingredient("egg", 2);  // alias for add()
+
+📋 STEPS
+  step("Any custom instruction");
+  mix("until smooth");
+  pour("wet into dry mixture");
+  stir("for 30 seconds");
+  season("with salt and pepper");
+  flip();
+
+⏱️ TIMING
+  cook(3, "minutes");
+  bake(25, "minutes");
+  rest(10, "minutes");
+
+🖼️ MEDIA
+  image("Name", "url", "description");
+  video("Tutorial", "youtube.com/...", "optional");
+  resource("Reference", "url");
+
+🍽️ SERVING
+  serve("warm with maple syrup");
+
+💡 TIP: All timing functions create interactive timers!
+`;
+
+        this.addConsoleMessage('info', helpText, 0);
     }
 
     /**
