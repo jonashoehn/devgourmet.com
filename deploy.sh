@@ -4,7 +4,6 @@ set -e
 # === Configuration ===
 REMOTE_HOST="contabo"
 REMOTE_PATH="~/www/devgourmet.com/app"
-DOCKER_COMPOSE_CMD="sudo docker compose up -d --build"
 
 # === Deployment ===
 echo "🚀 Starting deployment to $REMOTE_HOST..."
@@ -23,6 +22,6 @@ rsync -avz ./Dockerfile "$REMOTE_HOST:$REMOTE_PATH/"
 
 # Restart Docker Compose on remote host
 echo "🔄 Restarting Docker Compose on server..."
-ssh "$REMOTE_HOST" "cd $REMOTE_PATH && $DOCKER_COMPOSE_CMD"
+ssh "$REMOTE_HOST" "cd $REMOTE_PATH && sudo docker compose build && sudo docker compose down && sudo docker compose up -d"
 
 echo "✅ Deployment completed successfully!"

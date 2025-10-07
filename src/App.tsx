@@ -47,7 +47,7 @@ function AppContent() {
                         <span className="text-[var(--color-function)]">Gourmet</span>
                     </h1>
                     <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden md:inline">
-                        v0.0.1
+                        v0.1.0
                     </span>
                 </div>
 
