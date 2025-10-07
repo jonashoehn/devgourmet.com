@@ -36,10 +36,11 @@ function AppContent() {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-[var(--color-ide-bg)] text-[var(--color-ide-text)]">
+        <div className="flex flex-col bg-[var(--color-ide-bg)] text-[var(--color-ide-text)]" style={{ height: '100dvh' }}>
             {/* Top Bar */}
             <header
-                className="flex items-center justify-between px-4 py-3 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]">
+                className="flex items-center justify-between px-4 py-3 bg-[var(--color-ide-bg-lighter)] border-b border-[var(--color-ide-border)]"
+                style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}>
                 <div className="flex items-center gap-3">
                     <img src="/white_knife.svg" alt="DevGourmet Logo" className="w-8 h-8" />
                     <h1 className="text-lg font-bold">

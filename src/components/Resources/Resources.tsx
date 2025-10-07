@@ -126,16 +126,22 @@ export function Resources() {
       {/* Lightbox Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
           onClick={() => setSelectedIndex(null)}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          style={{
+            paddingTop: 'max(16px, env(safe-area-inset-top))',
+            paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+            paddingLeft: 'max(16px, env(safe-area-inset-left))',
+            paddingRight: 'max(16px, env(safe-area-inset-right))'
+          }}
         >
           <div className="relative max-w-5xl max-h-full w-full flex items-center justify-center">
             {/* Close button */}
             <button
-              className="absolute -top-10 right-0 text-white hover:text-[var(--color-accent)] transition-colors font-mono text-sm z-10"
+              className="absolute top-0 right-0 text-white hover:text-[var(--color-accent)] transition-colors font-mono text-sm z-10 px-2 py-1"
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedIndex(null);
@@ -146,7 +152,7 @@ export function Resources() {
 
             {/* Counter */}
             {resources.length > 1 && (
-              <div className="absolute -top-10 left-0 text-white font-mono text-sm">
+              <div className="absolute top-0 left-0 text-white font-mono text-sm px-2 py-1">
                 {(selectedIndex ?? 0) + 1} / {resources.length}
               </div>
             )}
