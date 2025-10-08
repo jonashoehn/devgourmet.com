@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRecipe } from '../../context';
+import { CaretLeft, CaretRight, X } from '@phosphor-icons/react';
 
 export function Resources() {
   const { resources } = useRecipe();
@@ -164,13 +165,13 @@ export function Resources() {
           <div className="relative max-w-5xl max-h-full w-full flex items-center justify-center">
             {/* Close button */}
             <button
-              className="absolute top-0 right-0 text-white hover:text-[var(--color-accent)] transition-colors font-mono text-sm z-10 px-2 py-1"
+              className="absolute top-0 right-0 text-white hover:text-[var(--color-accent)] transition-colors font-mono text-sm z-10 px-2 py-1 flex items-center gap-1"
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedIndex(null);
               }}
             >
-              ✕ Close (ESC)
+              <X size={16} weight="bold" /> Close (ESC)
             </button>
 
             {/* Counter */}
@@ -183,14 +184,14 @@ export function Resources() {
             {/* Previous button - hidden on mobile */}
             {resources.length > 1 && (
               <button
-                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center bg-[var(--color-ide-bg)] bg-opacity-80 hover:bg-opacity-100 border border-[var(--color-ide-border)] text-white hover:text-[var(--color-accent)] transition-all text-2xl z-10"
+                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center bg-[var(--color-ide-bg)] bg-opacity-80 hover:bg-opacity-100 border border-[var(--color-ide-border)] text-white hover:text-[var(--color-accent)] transition-all z-10"
                 onClick={(e) => {
                   e.stopPropagation();
                   goToPrevious();
                 }}
                 title="Previous (←)"
               >
-                ‹
+                <CaretLeft size={32} weight="bold" />
               </button>
             )}
 
@@ -294,14 +295,14 @@ export function Resources() {
             {/* Next button - hidden on mobile */}
             {resources.length > 1 && (
               <button
-                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center bg-[var(--color-ide-bg)] bg-opacity-80 hover:bg-opacity-100 border border-[var(--color-ide-border)] text-white hover:text-[var(--color-accent)] transition-all text-2xl z-10"
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center bg-[var(--color-ide-bg)] bg-opacity-80 hover:bg-opacity-100 border border-[var(--color-ide-border)] text-white hover:text-[var(--color-accent)] transition-all z-10"
                 onClick={(e) => {
                   e.stopPropagation();
                   goToNext();
                 }}
                 title="Next (→)"
               >
-                ›
+                <CaretRight size={32} weight="bold" />
               </button>
             )}
           </div>

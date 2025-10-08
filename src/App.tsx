@@ -5,6 +5,7 @@ import {IngredientList} from './components/IngredientList';
 import {StepExecutor} from './components/StepExecutor';
 import {Console} from './components/Console';
 import {Resources} from './components/Resources';
+import {WelcomeOverlay} from './components/WelcomeOverlay';
 import {broccoliFusilliRecipe, cookiesRecipe, demoRecipes, pancakesRecipe, spaghettiRecipe} from './recipes';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
@@ -104,7 +105,7 @@ function AppContent() {
                                     value="resources"
                                     className="flex-1 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] py-4 font-mono text-2xl hover:text-[var(--color-ide-text)] transition-colors"
                                 >
-                                    🖼️
+                                    📁
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="console"
@@ -192,6 +193,7 @@ function AppContent() {
 function App() {
     return (
         <RecipeProvider>
+            <WelcomeOverlay />
             <AppContent/>
         </RecipeProvider>
     );
