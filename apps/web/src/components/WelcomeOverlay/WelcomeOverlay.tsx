@@ -53,7 +53,7 @@ export function WelcomeOverlay() {
           >
             {/* Sparkle decorations */}
             <motion.div
-              className="absolute -top-6 -left-6"
+              className="absolute -top-6 -left-6 hidden sm:block"
               animate={{
                 rotate: [0, 360],
                 scale: [1, 1.2, 1],
@@ -63,7 +63,7 @@ export function WelcomeOverlay() {
               <Sparkle size={48} weight="fill" className="text-yellow-400" />
             </motion.div>
             <motion.div
-              className="absolute -bottom-6 -right-6"
+              className="absolute -bottom-6 -right-6 hidden sm:block"
               animate={{
                 rotate: [360, 0],
                 scale: [1, 1.2, 1],
@@ -141,15 +141,20 @@ export function WelcomeOverlay() {
                     <Cookie size={24} className="text-[var(--color-warning)] flex-shrink-0 mt-1" />
                     <div className="text-sm text-[var(--color-ide-text-muted)]">
                       <p className="mb-2">
-                        <span className="font-semibold text-[var(--color-ide-text)]">The Cookie Situation:</span>
+                        <span className="font-semibold text-[var(--color-ide-text)]">The Cookie & Data Situation:</span>
                       </p>
                       <p>
-                        We use exactly <span className="font-mono text-[var(--color-number)]">ONE</span> cookie to remember you've seen this message.
-                        That's it. No tracking, no analytics, no selling your soul to ad networks.
-                        Just one tiny cookie saying "this human has been welcomed."
+                        We use <span className="font-mono text-[var(--color-number)]">minimal cookies</span> for:
+                      </p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>Remembering you've seen this welcome message</li>
+                        <li>Keeping you logged in when you create an account</li>
+                      </ul>
+                      <p className="mt-2">
+                        No tracking, no analytics, no selling your data. Just the essentials to make the app work.
                       </p>
                       <p className="mt-2 italic">
-                        (Way less cookies than in our recipes, ironically)
+                        (Still way less cookies than in our cookie recipe 🍪)
                       </p>
                     </div>
                   </div>
@@ -167,7 +172,7 @@ export function WelcomeOverlay() {
                   Let's Cook! 🚀
                 </motion.button>
                 <p className="text-xs text-[var(--color-ide-text-muted)] mt-3">
-                  By clicking this button, you agree to have fun and maybe learn something
+                  By clicking this button, you agree to the cookie usage described above and to have fun (maybe learn something too)
                 </p>
               </div>
             </div>

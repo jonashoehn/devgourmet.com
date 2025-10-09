@@ -176,7 +176,7 @@ export function Resources() {
 
             {/* Counter */}
             {resources.length > 1 && (
-              <div className="absolute top-0 left-0 text-white font-mono text-sm px-2 py-1">
+              <div className="absolute top-0 left-0 text-white font-mono text-sm px-2 py-1 z-20">
                 {(selectedIndex ?? 0) + 1} / {resources.length}
               </div>
             )}
