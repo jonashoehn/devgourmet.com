@@ -90,6 +90,11 @@ function AppContent() {
                     <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden md:inline">
                         v0.1.0
                     </span>
+                    {user && (
+                        <span className="text-xs text-[var(--color-ide-text-muted)] font-mono lg:hidden truncate max-w-[120px]" title={user.email}>
+                            {user.email}
+                        </span>
+                    )}
                 </div>
 
                 {/* Recipe Selector Dropdown */}
@@ -192,34 +197,55 @@ function AppContent() {
                     </Tabs>
                 </div>
 
-                {/* Desktop View - Split Panes */}
+                {/* Desktop View - Split Panes with Tabs */}
                 <div className="hidden lg:flex flex-1 overflow-hidden">
-                    {/* Left Panel - Editor */}
+                    {/* Left Panel - Editor (Always Visible) */}
                     <div className="w-1/2 flex flex-col border-r border-[var(--color-ide-border)]">
                         <RecipeEditor/>
                     </div>
 
-                    {/* Right Panel - Output */}
+                    {/* Right Panel - Tabs */}
                     <div className="w-1/2 flex flex-col">
-                        {/* Top Right - Ingredients & Variables */}
-                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
-                            <IngredientList/>
-                        </div>
-
-                        {/* Steps */}
-                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
-                            <StepExecutor/>
-                        </div>
-
-                        {/* Resources */}
-                        <div className="h-1/4 border-b border-[var(--color-ide-border)] overflow-auto">
-                            <Resources/>
-                        </div>
-
-                        {/* Bottom - Recipe Management */}
-                        <div className="h-1/4 overflow-auto">
-                            <RecipeManagement/>
-                        </div>
+                        <Tabs defaultValue="ingredients" className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                            <TabsList className="w-full flex rounded-none border-b border-[var(--color-ide-border)] bg-[var(--color-ide-bg-lighter)] p-0 h-auto gap-0">
+                                <TabsTrigger
+                                    value="ingredients"
+                                    className="flex-1 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] py-2.5 px-4 font-mono text-xs hover:text-[var(--color-ide-text)] transition-colors"
+                                >
+                                    🥘 Ingredients
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="steps"
+                                    className="flex-1 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] py-2.5 px-4 font-mono text-xs hover:text-[var(--color-ide-text)] transition-colors"
+                                >
+                                    📋 Steps
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="resources"
+                                    className="flex-1 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] py-2.5 px-4 font-mono text-xs hover:text-[var(--color-ide-text)] transition-colors"
+                                >
+                                    📁 Resources
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="recipes"
+                                    className="flex-1 rounded-none text-[var(--color-ide-text-muted)] data-[state=active]:bg-[var(--color-ide-bg)] data-[state=active]:text-[var(--color-keyword)] py-2.5 px-4 font-mono text-xs hover:text-[var(--color-ide-text)] transition-colors"
+                                >
+                                    📚 Recipes
+                                </TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="ingredients" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
+                                <IngredientList/>
+                            </TabsContent>
+                            <TabsContent value="steps" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
+                                <StepExecutor/>
+                            </TabsContent>
+                            <TabsContent value="resources" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
+                                <Resources/>
+                            </TabsContent>
+                            <TabsContent value="recipes" className="flex-1 min-h-0 m-0 border-0 overflow-hidden">
+                                <RecipeManagement/>
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 </div>
             </div>
@@ -260,9 +286,10 @@ function App() {
                             theme="dark"
                             toastOptions={{
                                 style: {
-                                    background: 'var(--color-ide-bg-lighter)',
-                                    border: '1px solid var(--color-ide-border)',
+                                    background: '#2d2d30',
+                                    border: '1px solid var(--color-accent)',
                                     color: 'var(--color-ide-text)',
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
                                 },
                             }}
                         />

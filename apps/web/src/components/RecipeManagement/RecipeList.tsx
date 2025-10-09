@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { trpc } from '../../lib/trpc';
 import { useRecipe } from '../../context';
-import { Trash, Eye, LockSimple, Globe, Plus, FloppyDisk, X, ShareNetwork } from '@phosphor-icons/react';
+import { Trash, Eye, LockSimple, Globe, Plus, FloppyDisk, X, ShareNetwork, Warning } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface RecipeListProps {
   showDemoOnly?: boolean;
@@ -12,6 +20,8 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
   const { updateCode } = useRecipe();
   const [isCreating, setIsCreating] = useState(false);
   const [newRecipeTitle, setNewRecipeTitle] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [recipeToDelete, setRecipeToDelete] = useState<{ id: string; title: string } | null>(null);
 
   const recipesQuery = trpc.recipes.list.useQuery();
   const createMutation = trpc.recipes.create.useMutation();
@@ -43,17 +53,24 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
     updateCode(recipeCode, recipeId, recipeTitle);
   };
 
-  const handleDeleteRecipe = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this recipe?')) return;
+  const handleDeleteRecipe = async () => {
+    if (!recipeToDelete) return;
 
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: recipeToDelete.id });
       await utils.recipes.list.invalidate();
       toast.success('Recipe deleted successfully');
+      setDeleteDialogOpen(false);
+      setRecipeToDelete(null);
     } catch (error) {
       console.error('Failed to delete recipe:', error);
       toast.error('Failed to delete recipe');
     }
+  };
+
+  const openDeleteDialog = (id: string, title: string) => {
+    setRecipeToDelete({ id, title });
+    setDeleteDialogOpen(true);
   };
 
   const handleTogglePublic = async (id: string, currentIsPublic: boolean) => {
@@ -110,6 +127,7 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
   const demoRecipes = recipesQuery.data?.demoRecipes || [];
 
   return (
+    <>
     <div className="p-3 space-y-4">
       {!showDemoOnly && (
         <>
@@ -206,7 +224,7 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
                           )}
                         </button>
                         <button
-                          onClick={() => handleDeleteRecipe(recipe.id)}
+                          onClick={() => openDeleteDialog(recipe.id, recipe.title)}
                           className="p-1.5 hover:bg-[var(--color-ide-bg)] rounded transition-colors"
                           title="Delete Recipe"
                         >
@@ -273,5 +291,42 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
         </div>
       )}
     </div>
+
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <DialogContent className="bg-[var(--color-ide-bg-lighter)] border-2 border-[var(--color-error)] text-[var(--color-ide-text)] sm:max-w-[425px]">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <Warning size={32} weight="fill" className="text-[var(--color-error)]" />
+            <DialogTitle className="text-lg font-bold font-mono text-[var(--color-error)]">
+              Delete Recipe
+            </DialogTitle>
+          </div>
+          <DialogDescription className="text-[var(--color-ide-text-muted)] font-mono text-sm">
+            Are you sure you want to delete <span className="text-[var(--color-ide-text)] font-semibold">"{recipeToDelete?.title}"</span>? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2 sm:gap-2">
+          <button
+            onClick={() => {
+              setDeleteDialogOpen(false);
+              setRecipeToDelete(null);
+            }}
+            className="px-4 py-2 bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-ide-text)] font-mono text-sm transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDeleteRecipe}
+            disabled={deleteMutation.isPending}
+            className="px-4 py-2 bg-[var(--color-error)] hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-mono text-sm transition-colors flex items-center gap-2"
+          >
+            <Trash size={16} weight="fill" />
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete Recipe'}
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

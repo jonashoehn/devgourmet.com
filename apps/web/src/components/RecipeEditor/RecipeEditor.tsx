@@ -97,7 +97,7 @@ export function RecipeEditor() {
             <button
               onClick={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
-              className={`px-3 py-1 ${
+              className={`px-3 py-1 h-7 ${
                 hasUnsavedChanges
                   ? 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)]'
                   : 'bg-[var(--color-ide-bg)] border border-[var(--color-ide-border)]'
@@ -105,7 +105,7 @@ export function RecipeEditor() {
               title={hasUnsavedChanges ? 'Save Recipe (Unsaved Changes)' : 'No Changes to Save'}
             >
               <FloppyDisk size={14} weight={hasUnsavedChanges ? 'fill' : 'regular'} />
-              {isSaving ? 'Saving...' : hasUnsavedChanges ? 'Save *' : 'Saved'}
+              <span className="min-w-[60px] text-center">{isSaving ? 'Saving...' : hasUnsavedChanges ? 'Save *' : 'Saved'}</span>
             </button>
           )}
           <div className="flex gap-1">
