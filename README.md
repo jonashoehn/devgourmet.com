@@ -1,24 +1,67 @@
 # 👨‍💻🍳 DevGourmet
 
-**Cook recipes like you write code.**
+**Cook recipes like you write code. Save, share, and collaborate.**
 
-DevGourmet is an interactive recipe application that transforms cooking into an IDE-like experience. Write recipes in a simple, readable "DevScript" language, adjust variables dynamically, and execute steps like running a program.
+DevGourmet is an interactive recipe application that transforms cooking into an IDE-like experience. Write recipes in a simple, readable "DevScript" language, adjust variables dynamically, execute steps like running a program, and now—save, share, and manage your recipes with authentication and cloud persistence.
 
 ---
 
 ## ✨ Features
 
+### Core Features
 - 📝 **DevScript Language**: Write recipes that look like clean, readable code with full parser support (lexer, parser, interpreter)
 - 🔢 **Bidirectional Variable Sync**: Change servings or spice level via sliders—updates ingredients AND code in real-time
 - ⏱️ **Interactive Timers**: Every `cook()` step becomes a playable countdown with play/pause/stop controls
 - 📊 **Dynamic Calculations**: Ingredient amounts scale automatically based on variables
 - 🎯 **Step-by-Step Execution**: Navigate through recipe steps with visual progress tracking
-- 💬 **Console Output**: See every action logged in real-time with color-coded messages
 - 🎨 **IDE Theme**: Beautiful VS Code Dark+ inspired theme with syntax colors
 - 📱 **Fully Responsive**: Optimized layouts for mobile, tablet, and desktop
 - 🍽️ **Smart Ingredients**: Automatic emoji detection for 40+ common ingredients
-- ✏️ **Live Editing**: Code editor with 500ms debounce and tab key support
-- 🎛️ **Dual Controls**: Adjust variables with both sliders (1-20 range) and number inputs
+- 📁 **Media Resources**: Add images, videos, and links to your recipes
+- 🎭 **Welcome Overlay**: Animated welcome screen with cookie consent
+
+### New: Recipe Management & Authentication 🔐
+- 👤 **User Accounts**: Sign up and sign in with email/password
+- 💾 **Cloud Persistence**: Save your recipes to the cloud
+- 🔒 **Private Recipes**: Keep your recipes private or share them publicly
+- 🔗 **Recipe Sharing**: Generate shareable links for your public recipes
+- 📚 **Recipe Library**: Browse and manage all your saved recipes
+- ✏️ **Full CRUD**: Create, read, update, and delete your recipes
+
+---
+
+## 🏗️ Architecture
+
+DevGourmet is built as a **monorepo** with a clean separation between frontend and backend:
+
+```
+devgourmet/
+├── apps/
+│   ├── web/              # React frontend (Vite + TypeScript + Tailwind)
+│   └── server/           # Hono backend (Bun + tRPC + Drizzle + BetterAuth)
+├── packages/
+│   └── shared/           # Shared TypeScript types
+└── ...
+```
+
+### Tech Stack
+
+**Frontend:**
+- React 19 + TypeScript
+- Vite (build tool)
+- Tailwind CSS v4
+- tRPC client (type-safe API calls)
+- Motion (animations)
+- Phosphor Icons
+- shadcn/ui components
+
+**Backend:**
+- Bun (runtime)
+- Hono (web framework)
+- tRPC (type-safe API layer)
+- BetterAuth (authentication)
+- Drizzle ORM (database)
+- SQLite (database)
 
 ---
 
@@ -26,7 +69,7 @@ DevGourmet is an interactive recipe application that transforms cooking into an 
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (v1.0+)
+- [Bun](https://bun.sh) v1.0+
 
 ### Installation
 
@@ -35,22 +78,42 @@ DevGourmet is an interactive recipe application that transforms cooking into an 
 git clone <your-repo-url>
 cd devgourmet
 
-# Install dependencies
+# Install dependencies (installs all workspace packages)
 bun install
 
-# Start development server
+# Set up environment variables
+# Backend:
+cd apps/server
+cp .env.example .env
+# Edit .env and add your configuration:
+# - DATABASE_URL (SQLite file path)
+# - BETTER_AUTH_SECRET (random secret for JWT)
+# - BETTER_AUTH_URL (your backend URL)
+
+# Frontend:
+cd ../web
+cp .env.example .env
+# Edit .env and add:
+# - VITE_API_URL (backend URL, e.g., http://localhost:3000)
+
+# Run database migrations
+cd ../../
+bun run db:migrate
+
+# Start development servers (from root)
 bun run dev
 ```
 
-The app will be available at `http://localhost:5173`
+This will start:
+- **Frontend**: `http://localhost:5173`
+- **Backend**: `http://localhost:3000`
 
-### Demo Recipes
+### First Time Setup
 
-Try out these included recipes:
-- 🥞 **Classic Pancakes** - Simple breakfast with adjustable servings and sweetness
-- 🍝 **Spaghetti Marinara** - Italian pasta with customizable servings and spice level
-- 🍪 **Chocolate Chip Cookies** - Classic cookies with batch size control
-- 🥦 **Creamy Broccoli Fusilli** - Pasta with broccoli, anchovies, and adjustable spice
+1. Open `http://localhost:5173` in your browser
+2. Accept the welcome overlay cookie consent
+3. Sign up for an account (or browse demo recipes without signing in)
+4. Start creating, saving, and sharing recipes!
 
 ---
 
@@ -61,11 +124,16 @@ Try out these included recipes:
 let servings = 4;
 let sweetness = 2; // 1-5 scale
 
-add("flour", 200 * servings, "grams");
-add("milk", 300 * servings, "ml");
-add("egg", 2 * servings);
-add("sugar", 10 * sweetness, "grams");
+// Add ingredients
+ingredient("flour", 200 * servings, "grams");
+ingredient("milk", 300 * servings, "ml");
+ingredient("egg", 2 * servings);
+ingredient("sugar", 10 * sweetness, "grams");
 
+// Add visual reference
+image("Pancake Batter", "https://example.com/batter.jpg", "Smooth consistency");
+
+// Cooking steps
 mix("until smooth");
 rest(5, "minutes");
 cook(3, "minutes"); // ▶️ Play button appears
@@ -74,118 +142,103 @@ cook(2, "minutes");
 serve("warm with syrup");
 ```
 
-**What happens:**
-- Change `servings` slider from 4 to 8 → all ingredients double AND code updates automatically
-- Adjust `sweetness` → sugar amount changes in real-time in both ingredients list and calculations
-- Click ▶️ next to `cook(3, "minutes")` → timer starts with visual countdown and progress bar
-- Each step logs to the console with color-coded messages (info, success, error, variable changes)
-- Edit code directly → ingredients and steps re-parse instantly with 500ms debounce
+### Available Functions
+
+**Ingredients:**
+- `add(name, amount, unit?)` or `ingredient(name, amount, unit?)` - Add an ingredient
+
+**Actions:**
+- `mix(description)` - Mix ingredients
+- `cook(duration, unit)` - Cook with timer
+- `bake(duration, unit)` - Bake with timer
+- `rest(duration, unit)` - Rest/wait with timer
+- `flip()` - Flip item
+- `heat(description)` - Heat something
+- `cool(description)` - Cool something
+- `stir(description)` - Stir ingredients
+- `whisk(description)` - Whisk ingredients
+- `blend(description)` - Blend ingredients
+- `chop(description)` - Chop ingredients
+- `dice(description)` - Dice ingredients
+- `slice(description)` - Slice ingredients
+- `preheat(temp, unit)` - Preheat oven
+- `boil(description)` - Boil ingredients
+- `simmer(duration, unit)` - Simmer with timer
+- `fry(description)` - Fry ingredients
+- `sauté(description)` - Sauté ingredients
+- `grill(description)` - Grill ingredients
+- `roast(description)` - Roast ingredients
+- `steam(description)` - Steam ingredients
+- `knead(description)` - Knead dough
+- `fold(description)` - Fold ingredients
+- `season(description)` - Season food
+- `pour(description)` - Pour liquid
+- `serve(description)` - Serve dish
+- `step(description)` - Generic custom step
+
+**Resources:**
+- `resource(name, url, description?)` - Add a link resource
+- `image(name, url, description?)` - Add an image
+- `video(name, url, description?)` - Add a video link
+
+**Help:**
+- `help()` - Show syntax guide in console
 
 ---
 
-## 🎯 Development Roadmap
+## 🗄️ Database Schema
 
-### Phase 1: Foundation ✅
-- [x] Project setup with Vite + React + TypeScript
-- [x] Tailwind CSS v4 configuration
-- [x] Basic project structure
-- [x] DevScript parser (lexer, parser, interpreter)
-- [x] Core type definitions
+```typescript
+// users (managed by BetterAuth)
+- id: uuid (primary key)
+- email: string (unique)
+- password: string (hashed)
+- emailVerified: boolean
+- createdAt: timestamp
+- updatedAt: timestamp
 
-### Phase 2: Core Features ✅
-- [x] Recipe editor with live code editing
-- [x] Live variable system with bidirectional sync
-- [x] Ingredient list with dynamic calculations
-- [x] Step-by-step execution engine
-- [x] Console output component
-- [x] Timer functionality with play/pause/stop
-
-### Phase 3: UI/UX Polish ✅
-- [x] IDE-style theme implementation (VS Code Dark+)
-- [x] Responsive design (mobile/tablet/desktop)
-- [x] Error display and validation
-- [x] Interactive variable controls (sliders + number inputs)
-
-### Phase 4: Content & Enhancement ✅
-- [x] Demo recipes (Pancakes, Spaghetti, Cookies, Broccoli Fusilli)
-- [x] Recipe loading system
-- [x] Real-time ingredient emoji mapping
-- [ ] Recipe sharing/loading from localStorage
-- [ ] Framer Motion animations
-- [ ] Accessibility improvements (ARIA labels, keyboard nav)
-
-### Phase 5: Future Extensions
-- [ ] Syntax highlighting in editor
-- [ ] AI recipe generation
-- [ ] Voice commands
-- [ ] Recipe validation and suggestions
-- [ ] Export to Markdown/PDF
-- [ ] Dev Mode / Chef Mode toggle
-- [ ] Recipe comments and notes
-
----
-
-## 🏗️ Project Structure
-
-```
-devgourmet/
-├── src/
-│   ├── components/          # React components
-│   │   ├── RecipeEditor/   # Live code editor with debounce
-│   │   ├── IngredientList/ # Dynamic ingredients with variable controls
-│   │   ├── StepExecutor/   # Step-by-step navigation UI
-│   │   ├── Console/        # Execution log with message filtering
-│   │   └── Timer/          # Interactive timer with play/pause/stop
-│   ├── parser/             # DevScript language implementation
-│   │   ├── lexer.ts       # Tokenization (22 token types)
-│   │   ├── parser.ts      # AST generation with expression parsing
-│   │   └── interpreter.ts # Recipe execution with 15+ built-in functions
-│   ├── types/             # TypeScript definitions
-│   │   ├── tokens.ts      # Token and TokenType definitions
-│   │   ├── ast.ts         # AST node types
-│   │   └── recipe.ts      # Recipe state and execution types
-│   ├── context/           # State management
-│   │   └── RecipeContext.tsx  # Global recipe state with React Context
-│   ├── recipes/           # Demo recipe collection
-│   │   ├── pancakes.ts
-│   │   ├── spaghetti.ts
-│   │   ├── cookies.ts
-│   │   ├── broccoli-fusilli.ts
-│   │   └── index.ts
-│   ├── App.tsx            # Main app with responsive layout
-│   └── index.css          # Tailwind imports + CSS variables
-├── CLAUDE.md              # Development guide for AI assistants
-├── APP_FEATURES.md        # Complete feature specifications
-└── README.md              # This file
+// recipes
+- id: uuid (primary key)
+- userId: uuid (nullable, foreign key to users.id)
+- title: string (max 200 chars)
+- recipeCode: text (DevScript code)
+- isPublic: boolean (default: false)
+- createdAt: timestamp
+- updatedAt: timestamp
+- deletedAt: timestamp (nullable, soft delete)
 ```
 
----
-
-## 🛠️ Tech Stack
-
-- **Runtime**: [Bun](https://bun.sh) v1.0+ (package manager & runtime)
-- **Build Tool**: [Vite](https://vitejs.dev/) 6.0+ (fast dev server & build)
-- **Framework**: [React 19](https://react.dev/) (with hooks & context)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) 5.6+ (strict mode)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (with @tailwindcss/vite plugin)
-- **State Management**: React Context API (RecipeContext)
-- **Parser**: Custom implementation (Lexer → Parser → Interpreter)
-- **Animations**: CSS transitions + Tailwind utilities
-
-### Key Implementation Details
-
-- **Debounced Updates**: 500ms debounce on code editor changes to optimize re-parsing
-- **Bidirectional Sync**: Variable changes update both code and UI via regex-based line replacement
-- **Timer System**: Client-side countdown with start/pause/resume/stop controls
-- **Responsive Layout**: Flexbox with Tailwind breakpoints (mobile: stacked, desktop: split-pane)
-- **Error Handling**: Comprehensive try-catch with user-friendly error messages
+**Demo Recipes:** Recipes with `userId = null` are public demo recipes visible to everyone.
 
 ---
 
 ## 📜 Available Scripts
 
+### Root (Monorepo)
+
 ```bash
-# Start development server
+# Start both frontend and backend dev servers
+bun run dev
+
+# Build all apps for production
+bun run build
+
+# Run database migrations
+bun run db:migrate
+
+# Generate database migrations
+bun run db:generate
+
+# Open Drizzle Studio (database GUI)
+bun run db:studio
+```
+
+### Frontend Only (`apps/web`)
+
+```bash
+cd apps/web
+
+# Start dev server
 bun run dev
 
 # Build for production
@@ -196,97 +249,289 @@ bun run preview
 
 # Type check
 bun run tsc --noEmit
+```
 
-# Lint code
-bun run lint
+### Backend Only (`apps/server`)
+
+```bash
+cd apps/server
+
+# Start dev server
+bun run dev
+
+# Build for production
+bun run build
+
+# Start production server
+bun run start
 ```
 
 ---
 
 ## 🚀 Production Deployment
 
+### Prerequisites
+
+- VPS or cloud server with Docker installed
+- Domain name configured (optional but recommended)
+- SSL certificate (via Let's Encrypt/Certbot)
+
 ### Build the Application
 
 ```bash
-# Build for production
+# Build both frontend and backend
 bun run build
 ```
 
-This creates optimized static files in the `dist/` directory.
+### Deploy with Docker Compose
 
-### Deploy to VPS with Docker
+The project includes Docker Compose configuration for easy deployment.
 
-The project includes Docker Compose configuration for easy deployment with nginx.
-
-**Deploy to Contabo VPS:**
+**1. Prepare the server:**
 
 ```bash
-# 1. Build the project locally
-bun run build
+# On your server, create directory structure
+mkdir -p /www/devgourmet.com/{web,server,data}
+```
 
-# 2. Sync files to VPS (run from project root)
- rsync -avz --delete \
+**2. Sync files to server:**
+
+```bash
+# Sync frontend build
+rsync -avz --delete \
+  apps/web/dist/ \
+  user@your-server:/www/devgourmet.com/web/
+
+# Sync backend
+rsync -avz --delete \
   --exclude 'node_modules' \
-  --exclude '.git' \
   --exclude 'dist' \
-  ./dist/ contabo:~/www/devgourmet.com/app/
+  apps/server/ \
+  user@your-server:/www/devgourmet.com/server/
 
-# 3. Sync Docker configuration
+# Sync Docker configuration
 rsync -avz \
   docker-compose.yml \
   nginx.conf \
-  root@your-vps-ip:/www/devgourmet.com/
-
-# 4. SSH into VPS and start containers
-ssh root@your-vps-ip
-cd /www/devgourmet.com
-docker-compose up -d
+  user@your-server:/www/devgourmet.com/
 ```
 
-**Directory structure on VPS:**
-```
-/www/devgourmet.com/
-├── docker-compose.yml
-├── nginx.conf
-└── app/              # Static build artifacts from dist/
-    ├── index.html
-    ├── assets/
-    └── ...
-```
-
-**Useful Docker commands:**
+**3. Configure environment variables on server:**
 
 ```bash
+# SSH into server
+ssh user@your-server
+
+cd /www/devgourmet.com
+
+# Create .env files
+cat > server/.env << EOF
+DATABASE_URL=file:../data/devgourmet.db
+BETTER_AUTH_SECRET=<generate-random-secret>
+BETTER_AUTH_URL=https://api.yourdomain.com
+NODE_ENV=production
+EOF
+
+cat > web/.env << EOF
+VITE_API_URL=https://api.yourdomain.com
+EOF
+```
+
+**4. Start services:**
+
+```bash
+# Start containers
+docker-compose up -d
+
 # View logs
 docker-compose logs -f
 
-# Restart container
-docker-compose restart
+# Check status
+docker-compose ps
+```
 
-# Stop containers
-docker-compose down
+**5. Configure nginx reverse proxy (on host):**
 
-# Update deployment (after new rsync)
-docker-compose up -d --force-recreate
+```nginx
+# /etc/nginx/sites-available/devgourmet
+
+# Frontend
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# Backend API
+server {
+    listen 443 ssl http2;
+    server_name api.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+### Update Deployment
+
+```bash
+# Rebuild locally
+bun run build
+
+# Sync to server
+rsync -avz --delete apps/web/dist/ user@your-server:/www/devgourmet.com/web/
+rsync -avz --delete --exclude 'node_modules' apps/server/ user@your-server:/www/devgourmet.com/server/
+
+# On server: restart containers
+ssh user@your-server "cd /www/devgourmet.com && docker-compose restart"
 ```
 
 ---
 
-## 🎨 Design System
+## 🎯 Development Roadmap
 
-### Color Palette
+### Phase 1: Foundation ✅
+- [x] Project setup with Vite + React + TypeScript
+- [x] Tailwind CSS v4 configuration
+- [x] DevScript parser (lexer, parser, interpreter)
+- [x] Core type definitions
 
-The app uses a VS Code Dark+ inspired theme:
+### Phase 2: Core Features ✅
+- [x] Recipe editor with live code editing
+- [x] Live variable system with bidirectional sync
+- [x] Ingredient list with dynamic calculations
+- [x] Step-by-step execution engine
+- [x] Timer functionality with play/pause/stop
 
-- **Background**: `#1e1e1e` (IDE dark)
-- **Foreground**: `#d4d4d4` (Light text)
-- **Accent**: `#007acc` (Blue)
-- **Syntax Colors**:
-  - Keywords: `#569cd6` (Blue)
-  - Functions: `#dcdcaa` (Yellow)
-  - Strings: `#ce9178` (Orange)
-  - Numbers: `#b5cea8` (Light green)
-  - Comments: `#6a9955` (Green)
+### Phase 3: UI/UX Polish ✅
+- [x] IDE-style theme implementation (VS Code Dark+)
+- [x] Responsive design (mobile/tablet/desktop)
+- [x] Error display and validation
+- [x] Interactive variable controls (sliders + number inputs)
+- [x] Media resources (images, videos, links)
+- [x] Welcome overlay with cookie consent
+- [x] Phosphor icons integration
+
+### Phase 4: Backend & Authentication 🚧
+- [x] Monorepo structure with Better T Stack
+- [x] Hono backend with tRPC
+- [x] BetterAuth email/password authentication
+- [x] Drizzle ORM + SQLite database
+- [x] Recipe CRUD API endpoints
+- [x] Recipe Management UI (replacing Console)
+- [x] Public/private recipe sharing
+- [ ] Recipe discovery (browse public recipes)
+- [ ] User profiles
+
+### Phase 5: Future Extensions
+- [ ] OAuth providers (Google, GitHub)
+- [ ] Recipe forking/remixing
+- [ ] Recipe comments and ratings
+- [ ] AI recipe generation
+- [ ] Voice commands
+- [ ] Recipe validation and suggestions
+- [ ] Export to Markdown/PDF
+- [ ] Recipe collections/cookbooks
+- [ ] Collaborative editing
+
+---
+
+## 🏗️ Project Structure
+
+```
+devgourmet/
+├── apps/
+│   ├── web/                    # Frontend React application
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   ├── RecipeEditor/     # Code editor
+│   │   │   │   ├── IngredientList/   # Dynamic ingredients
+│   │   │   │   ├── StepExecutor/     # Step execution
+│   │   │   │   ├── Resources/        # Media gallery
+│   │   │   │   ├── RecipeManagement/ # Recipe CRUD UI
+│   │   │   │   ├── WelcomeOverlay/   # Welcome screen
+│   │   │   │   └── ui/               # shadcn/ui components
+│   │   │   ├── parser/
+│   │   │   │   ├── lexer.ts          # Tokenization
+│   │   │   │   ├── parser.ts         # AST generation
+│   │   │   │   └── interpreter.ts    # Recipe execution
+│   │   │   ├── context/              # React context
+│   │   │   ├── lib/                  # Utilities
+│   │   │   ├── types/                # TypeScript types
+│   │   │   ├── recipes/              # Demo recipes
+│   │   │   └── App.tsx
+│   │   └── package.json
+│   │
+│   └── server/                 # Backend Hono application
+│       ├── src/
+│       │   ├── index.ts              # Main server
+│       │   ├── db/
+│       │   │   ├── schema.ts         # Drizzle schema
+│       │   │   └── migrations/       # Database migrations
+│       │   ├── auth/
+│       │   │   └── config.ts         # BetterAuth setup
+│       │   └── api/
+│       │       ├── trpc.ts           # tRPC setup
+│       │       └── routers/
+│       │           ├── auth.ts       # Auth routes
+│       │           └── recipes.ts    # Recipe CRUD routes
+│       └── package.json
+│
+├── packages/
+│   └── shared/                 # Shared code
+│       ├── types/                    # Shared TypeScript types
+│       └── package.json
+│
+├── docker-compose.yml          # Docker deployment
+├── nginx.conf                  # nginx configuration
+├── CLAUDE.md                   # Development guide
+├── APP_FEATURES.md             # Feature specifications
+└── README.md                   # This file
+```
+
+---
+
+## 🔐 Authentication Flow
+
+1. **Unauthenticated User:**
+   - Can view and interact with demo recipes
+   - Can write recipes but cannot save them
+   - Prompted to sign up to save recipes
+
+2. **Sign Up:**
+   - Enter email and password
+   - BetterAuth creates account with hashed password
+   - Auto-login after signup
+
+3. **Sign In:**
+   - Enter email and password
+   - Receive session token (stored in httpOnly cookie)
+   - Access to personal recipe library
+
+4. **Authenticated User:**
+   - View own recipes + demo recipes
+   - Create new recipes (auto-saved to database)
+   - Edit and delete own recipes
+   - Toggle recipes public/private
+   - Generate shareable links for public recipes
+
+5. **Sign Out:**
+   - Session invalidated
+   - Redirected to demo recipes view
 
 ---
 
@@ -310,12 +555,14 @@ MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
+- Built with [Better T Stack](https://github.com/Snazzah/create-better-t-stack)
+- Icons by [Phosphor Icons](https://phosphoricons.com/)
+- UI components by [shadcn/ui](https://ui.shadcn.com/)
 - Inspired by developer tools and IDEs
-- Built with modern web technologies
 - Designed for both developers and home cooks
 
 ---
 
 **Happy Cooking! 👨‍💻🍳**
 
-*Turn your recipes into code, and your kitchen into an IDE.*
+*Turn your recipes into code, save them to the cloud, and share them with the world.*

@@ -4,7 +4,10 @@
       "Bash(bun remove:*)",
       "Bash(bun add:*)",
       "Bash(bunx:*)",
-      "Bash(bun run:*)"
+      "Bash(bun run:*)",
+      "Bash(bun:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []

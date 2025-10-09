@@ -1,0 +1,47 @@
+
+services:
+  web:
+    build:
+      context: . # <--- CHANGE THIS: Use the project root as the build context
+      dockerfile: apps/web/Dockerfile # <--- Specify Dockerfile path relative to root context
+    container_name: devgourmet_web
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=https://devgourmet.com
+    networks:
+      - caddy_net
+      - internal
+    expose:
+      - "80"
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: . # This is already correct
+      dockerfile: apps/server/Dockerfile # This is already correct
+    container_name: devgourmet_server
+    restart: unless-stopped
+    user: "1000:1000"  # Run as host user to match volume permissions
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=./data/devgourmet.db
+      - BETTER_AUTH_URL=https://devgourmet.com
+      - FRONTEND_URL=https://devgourmet.com
+    volumes:
+      # Persist database
+      - ./data:/app/apps/server/data
+    networks:
+      - caddy_net
+      - internal
+    expose:
+      - "3000"
+
+networks:
+  caddy_net:
+    external: true
+  internal:
+    driver: bridge
