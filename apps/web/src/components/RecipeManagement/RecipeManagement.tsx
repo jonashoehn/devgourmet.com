@@ -33,12 +33,12 @@ export function RecipeManagement() {
         </h2>
         {user && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden sm:inline">
+            <span className="text-xs text-[var(--color-ide-text-muted)] font-mono truncate max-w-[180px]" title={user.email}>
               {user.email}
             </span>
             <button
               onClick={() => signOut()}
-              className="p-1.5 hover:bg-[var(--color-ide-bg)] rounded transition-colors"
+              className="p-1.5 hover:bg-[var(--color-ide-bg)] rounded transition-colors flex-shrink-0"
               title="Sign Out"
             >
               <SignOut size={16} className="text-[var(--color-ide-text-muted)] hover:text-[var(--color-ide-text)]" />

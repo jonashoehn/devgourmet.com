@@ -79,7 +79,7 @@ export function RecipeProvider({children}: { children: ReactNode }) {
             const tokens = lexer.tokenize();
 
             // Parse
-            const parser = new Parser(tokens);
+            const parser = new Parser(tokens, code);
             const ast = parser.parse();
 
             // Execute
@@ -184,7 +184,7 @@ export function RecipeProvider({children}: { children: ReactNode }) {
             try {
                 const lexer = new Lexer(updatedCode);
                 const tokens = lexer.tokenize();
-                const parser = new Parser(tokens);
+                const parser = new Parser(tokens, updatedCode);
                 const ast = parser.parse();
 
                 // Create interpreter with updated variables

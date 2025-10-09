@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {RecipeProvider, useRecipe} from './context';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -21,11 +21,43 @@ function AppContent() {
     const {updateCode} = useRecipe();
     const { user } = useAuth();
     const recipesQuery = trpc.recipes.list.useQuery(undefined, { enabled: !!user });
+    const hasLoadedSharedRecipe = useRef(false);
 
-    // Check for shared recipe in URL
+    // Helper function to update meta tags for sharing
+    const updateMetaTags = (title: string, description: string) => {
+        // Update page title
+        document.title = `${title} - DevGourmet`;
+
+        // Update meta tags
+        const updateMetaTag = (property: string, content: string) => {
+            let element = document.querySelector(`meta[property="${property}"]`) ||
+                         document.querySelector(`meta[name="${property}"]`);
+            if (element) {
+                element.setAttribute('content', content);
+            } else {
+                element = document.createElement('meta');
+                element.setAttribute(property.startsWith('og:') || property.startsWith('twitter:') ? 'property' : 'name', property);
+                element.setAttribute('content', content);
+                document.head.appendChild(element);
+            }
+        };
+
+        updateMetaTag('og:title', `${title} - DevGourmet`);
+        updateMetaTag('twitter:title', `${title} - DevGourmet`);
+        updateMetaTag('description', description);
+        updateMetaTag('og:description', description);
+        updateMetaTag('twitter:description', description);
+    };
+
+    // Check for shared recipe in URL or localStorage
     useEffect(() => {
+        // Prevent double execution in React StrictMode
+        if (hasLoadedSharedRecipe.current) return;
+        hasLoadedSharedRecipe.current = true;
+
         const urlParams = new URLSearchParams(window.location.search);
         const recipeId = urlParams.get('recipe');
+        const titleParam = urlParams.get('title');
 
         if (recipeId) {
             // Use tRPC to fetch the recipe
@@ -33,19 +65,67 @@ function AppContent() {
                 .then((recipe) => {
                     if (recipe) {
                         updateCode(recipe.recipeCode, recipe.id, recipe.title);
-                        // Clear the URL parameter
-                        window.history.replaceState({}, '', window.location.pathname);
+
+                        // Extract description from frontmatter if available
+                        const frontmatterMatch = recipe.recipeCode.match(/^---\s*\n([\s\S]*?)\n---/);
+                        let description = 'A DevGourmet recipe - interactive cooking made easy';
+                        if (frontmatterMatch) {
+                            const descMatch = frontmatterMatch[1].match(/description:\s*['"]?([^'"]+)['"]?/);
+                            if (descMatch) {
+                                description = descMatch[1];
+                            }
+                        }
+
+                        // Update meta tags for better link previews
+                        updateMetaTags(recipe.title, description);
+
+                        // Store in localStorage for persistence
+                        localStorage.setItem('sharedRecipe', JSON.stringify({
+                            id: recipe.id,
+                            title: recipe.title,
+                            code: recipe.recipeCode,
+                            timestamp: Date.now(),
+                        }));
+
+                        // Update URL to include title for better context
+                        const encodedTitle = encodeURIComponent(recipe.title);
+                        window.history.replaceState({}, '', `?recipe=${recipeId}&title=${encodedTitle}`);
+
+                        toast.success(`Loaded shared recipe: ${recipe.title}`);
                     }
                 })
                 .catch((error) => {
                     console.error('Failed to load shared recipe:', error);
                     toast.error('Failed to load shared recipe');
                 });
+        } else {
+            // Check if we have a shared recipe in localStorage
+            const storedRecipe = localStorage.getItem('sharedRecipe');
+            if (storedRecipe) {
+                try {
+                    const { id, title, code, timestamp } = JSON.parse(storedRecipe);
+                    // Only load if less than 24 hours old
+                    const hoursSinceStored = (Date.now() - timestamp) / (1000 * 60 * 60);
+                    if (hoursSinceStored < 24) {
+                        updateCode(code, id, title);
+                    } else {
+                        // Clean up old stored recipe
+                        localStorage.removeItem('sharedRecipe');
+                    }
+                } catch (error) {
+                    console.error('Failed to load stored recipe:', error);
+                    localStorage.removeItem('sharedRecipe');
+                }
+            }
         }
-    }, [updateCode]);
+    }, []);
 
     const loadRecipe = (recipeId: string) => {
         setCurrentRecipe(recipeId);
+
+        // Clear shared recipe from localStorage and URL when loading a different recipe
+        localStorage.removeItem('sharedRecipe');
+        window.history.replaceState({}, '', window.location.pathname);
 
         // Check if it's a user recipe
         const userRecipe = recipesQuery.data?.userRecipes?.find(r => r.id === recipeId);
@@ -90,11 +170,6 @@ function AppContent() {
                     <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden md:inline">
                         v0.1.0
                     </span>
-                    {user && (
-                        <span className="text-xs text-[var(--color-ide-text-muted)] font-mono lg:hidden truncate max-w-[120px]" title={user.email}>
-                            {user.email}
-                        </span>
-                    )}
                 </div>
 
                 {/* Recipe Selector Dropdown */}

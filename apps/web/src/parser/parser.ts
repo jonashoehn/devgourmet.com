@@ -4,8 +4,78 @@ import {
   type BinaryExpression,
   type Expression,
   type FunctionCall, type Identifier, type Literal,
-  type VariableDeclaration, type Comment
+  type VariableDeclaration, type Comment, type Frontmatter
 } from "../types";
+
+/**
+ * Sanitize a string to prevent XSS attacks
+ */
+function sanitizeString(value: string): string {
+  return value
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+/**
+ * Parse frontmatter from raw code
+ */
+function parseFrontmatter(code: string): { frontmatter: Frontmatter | null; codeWithoutFrontmatter: string } {
+  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
+  const match = code.match(frontmatterRegex);
+
+  if (!match) {
+    return { frontmatter: null, codeWithoutFrontmatter: code };
+  }
+
+  const frontmatterContent = match[1];
+  const codeWithoutFrontmatter = code.slice(match[0].length);
+
+  const metadata: Frontmatter['metadata'] = {};
+  const lines = frontmatterContent.split('\n');
+
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) continue;
+
+    const key = line.slice(0, colonIndex).trim();
+    let value = line.slice(colonIndex + 1).trim();
+
+    // Remove quotes if present
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    // Sanitize the value
+    value = sanitizeString(value);
+
+    // Parse arrays (tags)
+    if (value.startsWith('[') && value.endsWith(']')) {
+      const arrayContent = value.slice(1, -1);
+      metadata[key] = arrayContent.split(',').map(item => sanitizeString(item.trim().replace(/['"]/g, '')));
+    }
+    // Parse numbers
+    else if (key === 'servings' && !isNaN(Number(value))) {
+      metadata[key] = Number(value);
+    }
+    // Regular string values
+    else {
+      metadata[key] = value;
+    }
+  }
+
+  return {
+    frontmatter: {
+      type: 'FRONTMATTER',
+      metadata,
+      line: 1,
+    },
+    codeWithoutFrontmatter,
+  };
+}
 
 /**
  * Parser for DevScript language
@@ -15,10 +85,12 @@ export class Parser {
   private tokens: Token[];
   private position: number = 0;
   private currentToken: Token;
+  private rawCode: string;
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: Token[], rawCode: string = '') {
     this.tokens = tokens.filter(t => t.type !== 'NEWLINE'); // Filter out newlines for easier parsing
     this.currentToken = this.tokens[0];
+    this.rawCode = rawCode;
   }
 
   /**
@@ -55,6 +127,9 @@ export class Parser {
    * Parse the entire program
    */
   public parse(): Program {
+    // Extract frontmatter from raw code
+    const { frontmatter, codeWithoutFrontmatter } = parseFrontmatter(this.rawCode);
+
     const body: ASTNode[] = [];
 
     while (this.currentToken.type !== 'EOF') {
@@ -66,6 +141,7 @@ export class Parser {
 
     return {
       type: 'PROGRAM',
+      frontmatter: frontmatter || undefined,
       body,
       line: 1,
     };

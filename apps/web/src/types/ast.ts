@@ -9,15 +9,31 @@ export type ASTNodeType =
   | 'BINARY_EXPRESSION'
   | 'LITERAL'
   | 'IDENTIFIER'
-  | 'COMMENT';
+  | 'COMMENT'
+  | 'FRONTMATTER';
 
 export interface ASTNode {
   type: ASTNodeType;
   line: number;
 }
 
+export interface Frontmatter extends ASTNode {
+  type: 'FRONTMATTER';
+  metadata: {
+    title?: string;
+    description?: string;
+    author?: string;
+    servings?: number;
+    prepTime?: string;
+    cookTime?: string;
+    tags?: string[];
+    [key: string]: string | number | string[] | undefined;
+  };
+}
+
 export interface Program extends ASTNode {
   type: 'PROGRAM';
+  frontmatter?: Frontmatter;
   body: ASTNode[];
 }
 

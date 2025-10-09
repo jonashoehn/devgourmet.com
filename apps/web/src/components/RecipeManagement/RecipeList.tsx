@@ -87,13 +87,15 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
     }
   };
 
-  const handleShare = (id: string, isPublic: boolean) => {
+  const handleShare = (id: string, isPublic: boolean, title: string) => {
     if (!isPublic) {
       toast.error('Recipe must be public to share');
       return;
     }
 
-    const shareUrl = `${window.location.origin}?recipe=${id}`;
+    // Safely encode the title for URL
+    const encodedTitle = encodeURIComponent(title);
+    const shareUrl = `${window.location.origin}?recipe=${id}&title=${encodedTitle}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       toast.success('Share link copied to clipboard!', {
         description: shareUrl,
@@ -205,7 +207,7 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
                       <div className="flex items-center gap-1">
                         {recipe.isPublic && (
                           <button
-                            onClick={() => handleShare(recipe.id, recipe.isPublic)}
+                            onClick={() => handleShare(recipe.id, recipe.isPublic, recipe.title)}
                             className="p-1.5 hover:bg-[var(--color-ide-bg)] rounded transition-colors"
                             title="Share Recipe"
                           >
@@ -294,7 +296,7 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
 
     {/* Delete Confirmation Dialog */}
     <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-      <DialogContent className="bg-[var(--color-ide-bg-lighter)] border-2 border-[var(--color-error)] text-[var(--color-ide-text)] sm:max-w-[425px]">
+      <DialogContent className="rounded-none bg-[var(--color-ide-bg-lighter)] border-2 border-[var(--color-error)] text-[var(--color-ide-text)] sm:max-w-[425px] max-w-[calc(100vw-2rem)]">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <Warning size={32} weight="fill" className="text-[var(--color-error)]" />
@@ -306,20 +308,20 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
             Are you sure you want to delete <span className="text-[var(--color-ide-text)] font-semibold">"{recipeToDelete?.title}"</span>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="gap-2 sm:gap-2">
+        <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
           <button
             onClick={() => {
               setDeleteDialogOpen(false);
               setRecipeToDelete(null);
             }}
-            className="px-4 py-2 bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-ide-text)] font-mono text-sm transition-colors"
+            className="w-full sm:w-auto px-4 py-2 bg-[var(--color-ide-bg)] hover:bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] text-[var(--color-ide-text)] font-mono text-sm transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleDeleteRecipe}
             disabled={deleteMutation.isPending}
-            className="px-4 py-2 bg-[var(--color-error)] hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-mono text-sm transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-4 py-2 bg-[var(--color-error)] hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-mono text-sm transition-colors flex items-center justify-center gap-2"
           >
             <Trash size={16} weight="fill" />
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Recipe'}

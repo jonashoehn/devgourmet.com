@@ -1,4 +1,14 @@
-export const pancakesRecipe = `// 🥞 Classic Pancakes
+export const pancakesRecipe = `---
+title: Classic Pancakes
+description: Fluffy golden pancakes perfect for breakfast - a developer-friendly recipe with adjustable servings
+author: DevGourmet Team
+servings: 4
+prepTime: 10 minutes
+cookTime: 15 minutes
+tags: [breakfast, quick, family-friendly]
+---
+
+// 🥞 Classic Pancakes
 let servings = 4;
 
 // Visual references
