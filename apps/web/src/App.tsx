@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
     const [currentRecipe, setCurrentRecipe] = useState('pancakes');
-    const {updateCode} = useRecipe();
+    const {updateCode, currentRecipeId, currentRecipeTitle} = useRecipe();
     const { user } = useAuth();
     const recipesQuery = trpc.recipes.list.useQuery(undefined, { enabled: !!user });
     const hasLoadedSharedRecipe = useRef(false);
@@ -155,6 +155,13 @@ function AppContent() {
         }
     };
 
+    // Update dropdown to reflect currently loaded recipe
+    useEffect(() => {
+        if (currentRecipeId) {
+            setCurrentRecipe(currentRecipeId);
+        }
+    }, [currentRecipeId]);
+
     return (
         <div className="flex flex-col bg-[var(--color-ide-bg)] text-[var(--color-ide-text)]" style={{ height: '100dvh' }}>
             {/* Top Bar */}
@@ -177,7 +184,9 @@ function AppContent() {
                     <span className="text-xs text-[var(--color-ide-text-muted)] font-mono hidden sm:inline">Recipe:</span>
                     <Select value={currentRecipe} onValueChange={loadRecipe}>
                         <SelectTrigger className="w-[180px] sm:w-[200px] h-8 rounded-none bg-[var(--color-ide-bg)] border-[var(--color-ide-border)] text-[var(--color-ide-text)] font-mono text-xs focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-[var(--color-accent)]">
-                            <SelectValue placeholder="Select recipe" />
+                            <SelectValue placeholder="Select recipe">
+                                {currentRecipeTitle || "Select recipe"}
+                            </SelectValue>
                         </SelectTrigger>
                         <SelectContent className="rounded-none bg-[var(--color-ide-bg-lighter)] border-[var(--color-ide-border)]">
                             {user && recipesQuery.data?.userRecipes && recipesQuery.data.userRecipes.length > 0 && (
@@ -194,6 +203,21 @@ function AppContent() {
                                             {recipe.title}
                                         </SelectItem>
                                     ))}
+                                    <div className="h-px bg-[var(--color-ide-border)] my-1"></div>
+                                </>
+                            )}
+                            {currentRecipeId && currentRecipeTitle && !recipesQuery.data?.userRecipes?.find(r => r.id === currentRecipeId) && !demoRecipes.find(r => r.id === currentRecipeId) && (
+                                <>
+                                    <div className="px-2 py-1.5 text-[10px] font-semibold text-[var(--color-ide-text-muted)] uppercase">
+                                        Shared by Others
+                                    </div>
+                                    <SelectItem
+                                        key={currentRecipeId}
+                                        value={currentRecipeId}
+                                        className="rounded-none text-[var(--color-ide-text)] font-mono text-xs focus:bg-[var(--color-accent)] focus:text-white cursor-pointer"
+                                    >
+                                        {currentRecipeTitle}
+                                    </SelectItem>
                                     <div className="h-px bg-[var(--color-ide-border)] my-1"></div>
                                 </>
                             )}
