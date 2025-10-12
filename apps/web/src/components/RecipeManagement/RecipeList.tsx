@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { trpc } from '../../lib/trpc';
 import { useRecipe } from '../../context';
-import { Trash, Eye, LockSimple, Globe, Plus, FloppyDisk, X, ShareNetwork, Warning } from '@phosphor-icons/react';
+import { Trash, Eye, LockSimple, Globe, Plus, FloppyDisk, X, ShareNetwork, Warning, Clock, User, ChefHat } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -11,6 +11,49 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+
+// Parse frontmatter from recipe code
+function parseFrontmatter(code: string) {
+  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---/;
+  const match = code.match(frontmatterRegex);
+
+  if (!match) return null;
+
+  const frontmatterContent = match[1];
+  const metadata: Record<string, any> = {};
+  const lines = frontmatterContent.split('\n');
+
+  for (const line of lines) {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) continue;
+
+    const key = line.slice(0, colonIndex).trim();
+    let value = line.slice(colonIndex + 1).trim();
+
+    // Remove quotes if present
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    // Parse arrays (tags)
+    if (value.startsWith('[') && value.endsWith(']')) {
+      const arrayContent = value.slice(1, -1);
+      metadata[key] = arrayContent.split(',').map(item => item.trim().replace(/['"]/g, ''));
+    }
+    // Parse numbers
+    else if (key === 'servings' && !isNaN(Number(value))) {
+      metadata[key] = Number(value);
+    }
+    // Regular string values
+    else {
+      metadata[key] = value;
+    }
+  }
+
+  return metadata;
+}
 
 interface RecipeListProps {
   showDemoOnly?: boolean;
@@ -22,6 +65,7 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
   const [newRecipeTitle, setNewRecipeTitle] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [recipeToDelete, setRecipeToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
 
   const recipesQuery = trpc.recipes.list.useQuery();
   const createMutation = trpc.recipes.create.useMutation();
@@ -29,6 +73,44 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
   const deleteMutation = trpc.recipes.delete.useMutation();
 
   const utils = trpc.useUtils();
+
+  // Extract all unique tags from user recipes
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    recipesQuery.data?.userRecipes?.forEach(recipe => {
+      const metadata = parseFrontmatter(recipe.recipeCode);
+      if (metadata?.tags && Array.isArray(metadata.tags)) {
+        metadata.tags.forEach((tag: string) => tags.add(tag));
+      }
+    });
+    return Array.from(tags).sort();
+  }, [recipesQuery.data?.userRecipes]);
+
+  // Filter recipes by selected tags
+  const filteredUserRecipes = useMemo(() => {
+    if (selectedTags.size === 0) return recipesQuery.data?.userRecipes || [];
+
+    return (recipesQuery.data?.userRecipes || []).filter(recipe => {
+      const metadata = parseFrontmatter(recipe.recipeCode);
+      if (!metadata?.tags || !Array.isArray(metadata.tags)) return false;
+
+      return Array.from(selectedTags).every(selectedTag =>
+        metadata.tags.includes(selectedTag)
+      );
+    });
+  }, [recipesQuery.data?.userRecipes, selectedTags]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(tag)) {
+        newSet.delete(tag);
+      } else {
+        newSet.add(tag);
+      }
+      return newSet;
+    });
+  };
 
   const handleCreateRecipe = async () => {
     if (!newRecipeTitle.trim()) return;
@@ -188,14 +270,49 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
             </div>
           )}
 
+          {/* Tag Filter */}
+          {allTags.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold text-[var(--color-ide-text-muted)] font-mono uppercase mb-0">
+                Filter by Tags
+              </h3>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {allTags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant={selectedTags.has(tag) ? "default" : "outline"}
+                    className={`cursor-pointer font-mono text-xs transition-colors ${
+                      selectedTags.has(tag)
+                        ? 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white border-[var(--color-accent)]'
+                        : 'bg-transparent hover:bg-[var(--color-ide-bg)] text-[var(--color-ide-text)] border-[var(--color-ide-border)]'
+                    }`}
+                    onClick={() => toggleTag(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              {selectedTags.size > 0 && (
+                <button
+                  onClick={() => setSelectedTags(new Set())}
+                  className="mt-2 text-xs text-[var(--color-ide-text-muted)] hover:text-[var(--color-ide-text)] font-mono"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
+
           {/* User Recipes */}
-          {userRecipes.length > 0 && (
+          {filteredUserRecipes.length > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-[var(--color-ide-text-muted)] mb-2 font-mono uppercase">
-                My Recipes ({userRecipes.length})
+                My Recipes ({filteredUserRecipes.length})
               </h3>
               <div className="space-y-2">
-                {userRecipes.map((recipe) => (
+                {filteredUserRecipes.map((recipe) => {
+                  const metadata = parseFrontmatter(recipe.recipeCode);
+                  return (
                   <div
                     key={recipe.id}
                     className="p-3 bg-[var(--color-ide-bg-lighter)] border border-[var(--color-ide-border)] hover:border-[var(--color-accent)] transition-all group"
@@ -234,6 +351,57 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
                         </button>
                       </div>
                     </div>
+
+                    {/* Frontmatter metadata */}
+                    {metadata && (
+                      <div className="mb-2 space-y-1">
+                        {metadata.description && (
+                          <p className="text-xs text-[var(--color-ide-text-muted)] line-clamp-2">
+                            {metadata.description}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap gap-2 items-center text-xs text-[var(--color-ide-text-muted)]">
+                          {metadata.author && (
+                            <div className="flex items-center gap-1">
+                              <User size={12} />
+                              <span>{metadata.author}</span>
+                            </div>
+                          )}
+                          {metadata.prepTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock size={12} />
+                              <span>Prep: {metadata.prepTime}</span>
+                            </div>
+                          )}
+                          {metadata.cookTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock size={12} />
+                              <span>Cook: {metadata.cookTime}</span>
+                            </div>
+                          )}
+                          {metadata.servings && (
+                            <div className="flex items-center gap-1">
+                              <ChefHat size={12} />
+                              <span>{metadata.servings} servings</span>
+                            </div>
+                          )}
+                        </div>
+                        {metadata.tags && Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {metadata.tags.map((tag: string) => (
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="text-[10px] py-0 px-1.5 h-4 bg-transparent text-[var(--color-ide-text-muted)] border-[var(--color-ide-border)] font-mono"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between text-xs text-[var(--color-ide-text-muted)] font-mono mb-2">
                       <span>
                         {new Date(recipe.updatedAt).toLocaleDateString()}
@@ -250,12 +418,21 @@ export function RecipeList({ showDemoOnly = false }: RecipeListProps) {
                       Load Recipe
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {userRecipes.length === 0 && !isCreating && (
+          {filteredUserRecipes.length === 0 && recipesQuery.data?.userRecipes && recipesQuery.data.userRecipes.length > 0 && (
+            <div className="text-center py-8">
+              <p className="text-[var(--color-ide-text-muted)] text-sm mb-4">
+                No recipes match the selected tags
+              </p>
+            </div>
+          )}
+
+          {recipesQuery.data?.userRecipes && recipesQuery.data.userRecipes.length === 0 && !isCreating && (
             <div className="text-center py-8">
               <p className="text-[var(--color-ide-text-muted)] text-sm mb-4">
                 You haven't created any recipes yet
